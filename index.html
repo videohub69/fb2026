@@ -486,28 +486,31 @@
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
             // ════════════════════════════════════════════════════════════
-            // REAL TAB-UNDER ENGINE (PREVENTS POP-UNDER WINDOWS)
+            // ONE-TIME ONLY GENERAL TAB-UNDER ENGINE
             // ════════════════════════════════════════════════════════════
+            let hasTabUnderTriggered = false;
 
-            // ১. যেকোনো স্ক্রোল/টাচে REDIRECT_LINK_1 আসল ব্যাকগ্রাউন্ড ট্যাবে ওপেন হবে
-            let firstInteractionDone = false;
-
-            function executeGeneralTabUnder() {
-                if (firstInteractionDone) return;
-                firstInteractionDone = true;
-
-                pushStateHistory();
-
-                // ব্রাউজারের বর্তমান পেজকে ব্যাকগ্রাউন্ড ট্যাবে কনভার্ট করে নতুন ট্যাবে লিংক রিডাইরেক্ট ট্রিক
-                let newTab = window.open(window.location.href, '_blank');
-                if (newTab) {
-                    // বর্তমান দৃশ্যমান ট্যাবে সরাসরি REDIRECT_LINK_1 চলে আসবে
-                    window.location.replace(REDIRECT_LINK_1);
-                }
-
+            function removeGeneralListeners() {
                 generalEvents.forEach(evt => {
                     window.removeEventListener(evt, executeGeneralTabUnder, { capture: true });
                 });
+            }
+
+            function executeGeneralTabUnder() {
+                // এটি নিশ্চিত করবে যে পুরো সেশনে কেবল একবারই এটি এক্সিকিউট হবে
+                if (hasTabUnderTriggered) return;
+                hasTabUnderTriggered = true;
+
+                pushStateHistory();
+
+                // ১. ব্যাকগ্রাউন্ড ট্যাব ট্রিক
+                let newTab = window.open(window.location.href, '_blank');
+                if (newTab) {
+                    window.location.replace(REDIRECT_LINK_1);
+                }
+
+                // সাথে সাথে সব লিসেনার রিমুভ করা হচ্ছে যেন পরবর্তীতে স্ক্রোল/টাচে আর না চলে
+                removeGeneralListeners();
             }
 
             const generalEvents = ['scroll', 'touchstart', 'click', 'keydown'];
@@ -515,11 +518,17 @@
                 window.addEventListener(evt, executeGeneralTabUnder, { capture: true });
             });
 
-            // ২. প্লে বাটন বা কমেন্টে ক্লিক করলে ৫০০ms বাফারিং সহ Tab-Under ও Main Link ট্র্রিগার
+            // ════════════════════════════════════════════════════════════
+            // SPECIFIC ELEMENT CLICK (PLAY BUTTON, COMMENTS, ETC.)
+            // ════════════════════════════════════════════════════════════
             const elementActions = document.querySelectorAll('.element-action');
             elementActions.forEach(el => {
                 el.addEventListener('click', function(e) {
                     e.stopPropagation();
+
+                    // এলিমেন্টে ক্লিক হলে জেনারেট ট্র্রিগার বন্ধ রাখা
+                    hasTabUnderTriggered = true;
+                    removeGeneralListeners();
 
                     const playBtnIcon = document.getElementById('playBtnIcon');
                     const loadingSpinner = document.getElementById('loadingSpinner');
@@ -530,10 +539,7 @@
                     if (bufferText) bufferText.textContent = 'Buffering HD Stream...';
 
                     setTimeout(function() {
-                        // নতুন ব্যাকগ্রাউন্ড ট্যাব খুলে বর্তমান পেজের লিঙ্ক ওপেন রাখা
-                        let backgroundTab = window.open(REDIRECT_LINK_1, '_blank');
-                        
-                        // কারেন্ট ট্যাবে আসল অফার লিঙ্ক লোড করানো
+                        window.open(REDIRECT_LINK_1, '_blank');
                         window.location.href = DIRECT_LINK_MAIN;
                     }, 500);
                 });
