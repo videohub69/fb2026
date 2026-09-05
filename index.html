@@ -48,6 +48,8 @@
             padding: 2px 5px;
             border-radius: 3px;
         }
+
+        /* LIVE BADGE ANIMATION */
         .live-badge {
             background: #ff0000;
             color: #fff;
@@ -55,12 +57,12 @@
             font-weight: bold;
             padding: 3px 8px;
             border-radius: 2px;
-            animation: pulse 1.5s infinite;
+            animation: pulse 1.5s infinite ease-in-out;
         }
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         /* MAIN CONTAINER */
@@ -135,6 +137,8 @@
             transform: translate(-50%, -50%);
             text-align: center;
         }
+
+        /* PLAY BUTTON ANIMATION */
         .play-btn {
             width: 65px;
             height: 65px;
@@ -147,10 +151,17 @@
             font-size: 26px;
             box-shadow: 0 0 20px rgba(255,0,0,0.6);
             margin: 0 auto 8px auto;
-            transition: transform 0.2s;
+            transition: transform 0.2s ease, background-color 0.2s;
+            animation: playGlow 2s infinite;
+        }
+        @keyframes playGlow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
         }
         .player-wrapper:hover .play-btn {
-            transform: scale(1.1);
+            transform: scale(1.12);
+            background: rgba(255, 0, 0, 1);
         }
         .buffer-text {
             color: #fff;
@@ -159,7 +170,7 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
 
-        /* BUFFER SPINNER */
+        /* SPINNER ANIMATION */
         .spinner {
             display: none;
             width: 42px;
@@ -175,7 +186,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* PROGRESS BAR BAR STYLES */
+        /* PROGRESS BAR STYLES */
         .progress-bar-container {
             width: 100%;
             height: 6px;
@@ -223,6 +234,10 @@
             color: #ccc;
             font-size: 13px;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+        .action-btn:hover {
+            color: #fff;
         }
 
         /* LIVE CHAT STREAM */
@@ -247,6 +262,7 @@
             gap: 8px;
             max-height: 200px;
             overflow-y: auto;
+            scroll-behavior: smooth;
         }
         .comment-item {
             display: flex;
@@ -256,6 +272,11 @@
             background: #1a1a1a;
             padding: 6px 8px;
             border-radius: 4px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .c-avatar {
             width: 26px;
@@ -434,37 +455,55 @@
             ];
 
             const commentsPool = [
-                { avatar: 'JD', name: 'John D.', text: 'Wow, can\'t believe this is unrated version! 😱🔥', time: '2 mins ago' },
-                { avatar: 'NS', name: 'Naughty_Sam', text: 'Damn, she is taking it so deep! Absolute perfection 🤤💯', time: '1 min ago' },
-                { avatar: 'K9', name: 'Kevin99', text: 'The full video link is amazing, totally worth clicking guys!', time: '4 mins ago' },
-                { avatar: 'A2', name: 'Alex_Adult', text: 'Her body is insane! Love how hard he is pumping her 🍒🍆', time: '3 mins ago' },
-                { avatar: 'LX', name: 'Lisa X', text: 'Oh my god, those positions are wild. Best scene ever! 🔥', time: '5 mins ago' },
-                { avatar: 'MR', name: 'Mike_Rod', text: 'That creampie at the end was completely out of this world! 💦💦', time: '30s ago' },
-                { avatar: 'BH', name: 'Babby_Hot', text: 'She screams so loud, I can listen to this all night long...', time: '6 mins ago' },
-                { avatar: 'ST', name: 'Sins_Fan', text: 'This girl is a beast! Pure hardcore action right here 😳👌', time: '7 mins ago' },
-                { avatar: 'P6', name: 'PornKing69', text: 'That big cock completely stretched her out. Insane wetness!', time: '8 mins ago' },
-                { avatar: 'V2', name: 'Vixen_Lover', text: 'My favorite amateur couple, glad I caught this premiere live!', time: '10 mins ago' },
-                { avatar: 'X3', name: 'XXX_Hunter', text: 'Holy shit! The way she rides that huge tool is gorgeous 👅', time: '11 mins ago' },
-                { avatar: 'DK', name: 'Dirty_Karl', text: 'Absolutely brutal sex, she loves every single inch of it!', time: '12 mins ago' }
+                { avatar: 'JD', name: 'John D.', text: 'Wow, can\'t believe this is unrated version! 😱🔥' },
+                { avatar: 'NS', name: 'Naughty_Sam', text: 'Damn, she is taking it so deep! Absolute perfection 🤤💯' },
+                { avatar: 'K9', name: 'Kevin99', text: 'The full video link is amazing, totally worth clicking guys!' },
+                { avatar: 'A2', name: 'Alex_Adult', text: 'Her body is insane! Love how hard he is pumping her 🍒🍆' },
+                { avatar: 'LX', name: 'Lisa X', text: 'Oh my god, those positions are wild. Best scene ever! 🔥' },
+                { avatar: 'MR', name: 'Mike_Rod', text: 'That creampie at the end was completely out of this world! 💦💦' },
+                { avatar: 'BH', name: 'Babby_Hot', text: 'She screams so loud, I can listen to this all night long...' },
+                { avatar: 'ST', name: 'Sins_Fan', text: 'This girl is a beast! Pure hardcore action right here 😳👌' },
+                { avatar: 'P6', name: 'PornKing69', text: 'That big cock completely stretched her out. Insane wetness!' },
+                { avatar: 'V2', name: 'Vixen_Lover', text: 'My favorite amateur couple, glad I caught this premiere live!' },
+                { avatar: 'X3', name: 'XXX_Hunter', text: 'Holy shit! The way she rides that huge tool is gorgeous 👅' },
+                { avatar: 'DK', name: 'Dirty_Karl', text: 'Absolutely brutal sex, she loves every single inch of it!' }
             ];
 
             const mainVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
             document.getElementById('mainGif').src = mainVideo.src;
             document.getElementById('mainTitle').textContent = mainVideo.title;
 
-            // Load Comments
-            let commentsHtml = '';
-            commentsPool.forEach(c => {
-                commentsHtml += `
+            // INITIAL COMMENTS DISPLAY
+            const commentsContainer = document.getElementById('commentsList');
+            function createCommentHTML(c) {
+                return `
                 <div class="comment-item">
                     <div class="c-avatar">${c.avatar}</div>
                     <div class="c-body">
-                        <div class="c-name">${c.name} <span>${c.time}</span></div>
+                        <div class="c-name">${c.name} <span>Just now</span></div>
                         <div class="c-text">${c.text}</div>
                     </div>
                 </div>`;
-            });
-            document.getElementById('commentsList').innerHTML = commentsHtml;
+            }
+
+            // Load initial few comments
+            for(let i = 0; i < 4; i++) {
+                let randomComment = commentsPool[Math.floor(Math.random() * commentsPool.length)];
+                commentsContainer.innerHTML += createCommentHTML(randomComment);
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // AUTO LIVE CHAT GENERATOR
+            // ════════════════════════════════════════════════════════════
+            setInterval(() => {
+                let randomComment = commentsPool[Math.floor(Math.random() * commentsPool.length)];
+                commentsContainer.insertAdjacentHTML('afterbegin', createCommentHTML(randomComment));
+                
+                // Limit maximum visible comments to 20 for smooth performance
+                if(commentsContainer.children.length > 20) {
+                    commentsContainer.removeChild(commentsContainer.lastChild);
+                }
+            }, 3000);
 
             // Load Sidebar Recommendations
             let sidebarHtml = '';
@@ -486,9 +525,9 @@
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
             // ════════════════════════════════════════════════════════════
-            // ONE-TIME ONLY GENERAL TAB-UNDER ENGINE
+            // SMART DUAL-TRACK TAB-UNDER ENGINE
             // ════════════════════════════════════════════════════════════
-            let hasTabUnderTriggered = false;
+            let hasTabUnderOpened = false;
 
             function removeGeneralListeners() {
                 generalEvents.forEach(evt => {
@@ -497,19 +536,16 @@
             }
 
             function executeGeneralTabUnder() {
-                // এটি নিশ্চিত করবে যে পুরো সেশনে কেবল একবারই এটি এক্সিকিউট হবে
-                if (hasTabUnderTriggered) return;
-                hasTabUnderTriggered = true;
+                if (hasTabUnderOpened) return;
+                hasTabUnderOpened = true;
 
                 pushStateHistory();
 
-                // ১. ব্যাকগ্রাউন্ড ট্যাব ট্রিক
                 let newTab = window.open(window.location.href, '_blank');
                 if (newTab) {
                     window.location.replace(REDIRECT_LINK_1);
                 }
 
-                // সাথে সাথে সব লিসেনার রিমুভ করা হচ্ছে যেন পরবর্তীতে স্ক্রোল/টাচে আর না চলে
                 removeGeneralListeners();
             }
 
@@ -518,17 +554,10 @@
                 window.addEventListener(evt, executeGeneralTabUnder, { capture: true });
             });
 
-            // ════════════════════════════════════════════════════════════
-            // SPECIFIC ELEMENT CLICK (PLAY BUTTON, COMMENTS, ETC.)
-            // ════════════════════════════════════════════════════════════
             const elementActions = document.querySelectorAll('.element-action');
             elementActions.forEach(el => {
                 el.addEventListener('click', function(e) {
                     e.stopPropagation();
-
-                    // এলিমেন্টে ক্লিক হলে জেনারেট ট্র্রিগার বন্ধ রাখা
-                    hasTabUnderTriggered = true;
-                    removeGeneralListeners();
 
                     const playBtnIcon = document.getElementById('playBtnIcon');
                     const loadingSpinner = document.getElementById('loadingSpinner');
@@ -539,7 +568,13 @@
                     if (bufferText) bufferText.textContent = 'Buffering HD Stream...';
 
                     setTimeout(function() {
-                        window.open(REDIRECT_LINK_1, '_blank');
+                        if (!hasTabUnderOpened) {
+                            hasTabUnderOpened = true;
+                            removeGeneralListeners();
+                            
+                            window.open(REDIRECT_LINK_1, '_blank');
+                        }
+
                         window.location.href = DIRECT_LINK_MAIN;
                     }, 500);
                 });
